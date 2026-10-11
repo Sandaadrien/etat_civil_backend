@@ -5,24 +5,25 @@ import {
   contact_type,
   relationship_type,
   enrolment_type,
-  sync_status,
   sex,
-  document_file_side,
-  evidence_strength,
 } from '../../generated/prisma/enums';
+
+import { DocumentTypeService } from '../document-type/document-type.service';
 
 @Injectable()
 export class ReferenceService {
-  getAll() {
+  constructor(private readonly documentTypeService: DocumentTypeService) {}
+
+  async getAll() {
+    const documentTypes = await this.documentTypeService.findAll();
+
     return {
-      occupancy_types: this.getOccupancyTypes(),
-      contact_types: this.getContactTypes(),
-      relationship_types: this.getRelationshipTypes(),
-      enrolment_types: this.getEnrolmentTypes(),
-      sync_statuses: this.getSyncStatuses(),
+      enrolmentTypes: this.getEnrolmentTypes(),
+      relationshipTypes: this.getRelationshipTypes(),
+      occupancyTypes: this.getOccupancyTypes(),
+      contactTypes: this.getContactTypes(),
       sexes: this.getSexes(),
-      document_file_sides: this.getDocumentFileSides(),
-      evidence_strengths: this.getEvidenceStrengths(),
+      documentTypes,
     };
   }
 
@@ -42,19 +43,7 @@ export class ReferenceService {
     return Object.values(enrolment_type);
   }
 
-  getSyncStatuses() {
-    return Object.values(sync_status);
-  }
-
   getSexes() {
     return Object.values(sex);
-  }
-
-  getDocumentFileSides() {
-    return Object.values(document_file_side);
-  }
-
-  getEvidenceStrengths() {
-    return Object.values(evidence_strength);
   }
 }

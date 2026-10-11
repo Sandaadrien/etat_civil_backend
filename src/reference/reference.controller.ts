@@ -30,23 +30,8 @@ export class ReferenceController {
     return this.referenceService.getEnrolmentTypes();
   }
 
-  @Get('sync-statuses')
-  getSyncStatuses() {
-    return this.referenceService.getSyncStatuses();
-  }
-
   @Get('sexes')
   getSexes() {
     return this.referenceService.getSexes();
-  }
-
-  @Get('document-file-sides')
-  getDocumentFileSides() {
-    return this.referenceService.getDocumentFileSides();
-  }
-
-  @Get('evidence-strengths')
-  getEvidenceStrengths() {
-    return this.referenceService.getEvidenceStrengths();
   }
 }

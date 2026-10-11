@@ -2,22 +2,26 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import {
   contact_type,
-  document_file_side,
   enrolment_type,
-  evidence_strength,
   occupancy_type,
   relationship_type,
   sex,
-  sync_status,
 } from '../../generated/prisma/enums';
+import { DocumentTypeService } from '../document-type/document-type.service';
 import { ReferenceService } from './reference.service';
 
 describe('ReferenceService', () => {
   let service: ReferenceService;
+  let documentTypeService: { findAll: jest.Mock };
 
   beforeEach(async () => {
+    documentTypeService = { findAll: jest.fn() };
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ReferenceService],
+      providers: [
+        ReferenceService,
+        { provide: DocumentTypeService, useValue: documentTypeService },
+      ],
     }).compile();
 
     service = module.get<ReferenceService>(ReferenceService);
@@ -28,17 +32,19 @@ describe('ReferenceService', () => {
   });
 
   describe('getAll', () => {
-    it('doit retourner toutes les listes de références', () => {
-      expect(service.getAll()).toEqual({
-        occupancy_types: Object.values(occupancy_type),
-        contact_types: Object.values(contact_type),
-        relationship_types: Object.values(relationship_type),
-        enrolment_types: Object.values(enrolment_type),
-        sync_statuses: Object.values(sync_status),
+    it('doit retourner toutes les listes de références et les types de documents', async () => {
+      const documentTypes = [{ id: '1', name: 'CIN' }];
+      documentTypeService.findAll.mockResolvedValue(documentTypes);
+
+      await expect(service.getAll()).resolves.toEqual({
+        enrolmentTypes: Object.values(enrolment_type),
+        relationshipTypes: Object.values(relationship_type),
+        occupancyTypes: Object.values(occupancy_type),
+        contactTypes: Object.values(contact_type),
         sexes: Object.values(sex),
-        document_file_sides: Object.values(document_file_side),
-        evidence_strengths: Object.values(evidence_strength),
+        documentTypes,
       });
+      expect(documentTypeService.findAll).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -60,23 +66,7 @@ describe('ReferenceService', () => {
     expect(service.getEnrolmentTypes()).toEqual(Object.values(enrolment_type));
   });
 
-  it('getSyncStatuses retourne les valeurs de sync_status', () => {
-    expect(service.getSyncStatuses()).toEqual(Object.values(sync_status));
-  });
-
   it('getSexes retourne les valeurs de sex', () => {
     expect(service.getSexes()).toEqual(Object.values(sex));
-  });
-
-  it('getDocumentFileSides retourne les valeurs de document_file_side', () => {
-    expect(service.getDocumentFileSides()).toEqual(
-      Object.values(document_file_side),
-    );
-  });
-
-  it('getEvidenceStrengths retourne les valeurs de evidence_strength', () => {
-    expect(service.getEvidenceStrengths()).toEqual(
-      Object.values(evidence_strength),
-    );
   });
 });

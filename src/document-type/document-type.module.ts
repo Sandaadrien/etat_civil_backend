@@ -6,5 +6,6 @@ import { DocumentTypeService } from './document-type.service';
 @Module({
   controllers: [DocumentTypeController],
   providers: [DocumentTypeService],
+  exports: [DocumentTypeService],
 })
 export class DocumentTypeModule {}

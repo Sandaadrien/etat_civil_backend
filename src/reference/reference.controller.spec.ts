@@ -11,10 +11,7 @@ describe('ReferenceController', () => {
     getContactTypes: jest.Mock;
     getRelationshipTypes: jest.Mock;
     getEnrolmentTypes: jest.Mock;
-    getSyncStatuses: jest.Mock;
     getSexes: jest.Mock;
-    getDocumentFileSides: jest.Mock;
-    getEvidenceStrengths: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -24,10 +21,7 @@ describe('ReferenceController', () => {
       getContactTypes: jest.fn(),
       getRelationshipTypes: jest.fn(),
       getEnrolmentTypes: jest.fn(),
-      getSyncStatuses: jest.fn(),
       getSexes: jest.fn(),
-      getDocumentFileSides: jest.fn(),
-      getEvidenceStrengths: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -49,10 +43,7 @@ describe('ReferenceController', () => {
     ['getContactTypes', 'contact-types'],
     ['getRelationshipTypes', 'relationship-types'],
     ['getEnrolmentTypes', 'enrolment-types'],
-    ['getSyncStatuses', 'sync-statuses'],
     ['getSexes', 'sexes'],
-    ['getDocumentFileSides', 'document-file-sides'],
-    ['getEvidenceStrengths', 'evidence-strengths'],
   ] as const)('%s délègue au service', (method) => {
     const fn = service[method];
     fn.mockReturnValue('value');

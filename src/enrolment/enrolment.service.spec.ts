@@ -1,4 +1,8 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { prisma } from '../lib/prisma';
@@ -18,7 +22,7 @@ jest.mock('../lib/prisma', () => ({
     contact_method: { createMany: jest.fn() },
     family_relationship: { createMany: jest.fn() },
     document: { create: jest.fn() },
-    document_file: { createMany: jest.fn() },
+    document_file: { findMany: jest.fn(), createMany: jest.fn() },
     face_biometric: { createMany: jest.fn() },
     $transaction: jest.fn(),
   },
@@ -105,6 +109,7 @@ describe('EnrolmentService', () => {
     });
     prismaMock.address.create.mockResolvedValue({});
     prismaMock.document.create.mockResolvedValue({ id: 'document-1' });
+    prismaMock.document_file.findMany.mockResolvedValue([]);
     prismaMock.document_file.createMany.mockResolvedValue({ count: 1 });
   }
 
@@ -315,6 +320,30 @@ describe('EnrolmentService', () => {
         new BadRequestException('Duplicate storage_key in the request'),
       );
     });
+
+    it('lance ConflictException si un storage_key existe déjà en base', async () => {
+      prismaMock.agent.findUnique.mockResolvedValue({
+        id: AGENT_ID,
+        is_active: true,
+      });
+      prismaMock.country.findUnique.mockResolvedValue({ id: 'country-1' });
+      prismaMock.fokontany.findUnique.mockResolvedValue({ id: 'fokontany-1' });
+      prismaMock.document_type.findMany.mockResolvedValue([
+        { id: DOCUMENT_TYPE_ID },
+      ]);
+      prismaMock.document_file.findMany.mockResolvedValue([
+        { storage_key: 'documents/front.png' },
+      ]);
+
+      await expect(service.create(buildDto(), USER_ID)).rejects.toThrow(
+        new ConflictException({
+          statusCode: 409,
+          error: 'Conflict',
+          message: 'Some files already exist in the database.',
+          details: ['documents/front.png'],
+        }),
+      );
+    });
   });
 
   describe('create - succès', () => {
@@ -406,6 +435,7 @@ describe('EnrolmentService', () => {
       });
       prismaMock.address.create.mockResolvedValue({});
       prismaMock.document.create.mockResolvedValue({ id: 'document-1' });
+      prismaMock.document_file.findMany.mockResolvedValue([]);
       prismaMock.document_file.createMany.mockResolvedValue({ count: 1 });
       prismaMock.family_relationship.createMany.mockResolvedValue({ count: 1 });
     });
