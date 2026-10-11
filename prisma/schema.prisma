@@ -1,11 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  previewFeatures = ["partialIndexes"]
 }
 
 datasource db {
@@ -15,22 +11,23 @@ datasource db {
 model User {
   id            String    @id
   name          String
-  email         String
+  email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  sessions      Session[]
   accounts      Account[]
+  agent         agent?
+  citizen       citizen?
+  sessions      Session[]
 
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -38,7 +35,6 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
@@ -48,7 +44,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -58,6 +53,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -73,4 +69,318 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model address {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  person_id      String         @db.Uuid
+  fokontany_id   String         @db.Uuid
+  house_number   String         @db.VarChar(255)
+  occupancy_type occupancy_type @default(OWNER)
+  created_at     DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime?      @db.Timestamptz(6)
+  fokontany      fokontany      @relation(fields: [fokontany_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_address_fokontany")
+  person         person         @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_address_person")
+}
+
+model agent {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String           @unique
+  person_id        String           @unique @db.Uuid
+  role_id          String           @db.Uuid
+  centre_id        String           @db.Uuid
+  created_at       DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime?        @db.Timestamptz(6)
+  is_active        Boolean          @default(true)
+  centre           centre           @relation(fields: [centre_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_agent_centre")
+  person           person           @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_agent_person")
+  application_role application_role @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_agent_role")
+  user             User             @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_agent_user")
+  enrolment        enrolment[]
+}
+
+model application_role {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @unique @db.VarChar(100)
+  description String?
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @db.Timestamptz(6)
+  agent       agent[]
+}
+
+model centre {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code         String    @unique @db.VarChar(100)
+  name         String    @db.VarChar(255)
+  fokontany_id String    @db.Uuid
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @db.Timestamptz(6)
+  agent        agent[]
+  fokontany    fokontany @relation(fields: [fokontany_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_centre_fokontany")
+}
+
+model citizen {
+  id                                                                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id                                                             String?               @unique
+  person_id                                                           String                @unique @db.Uuid
+  national_unique_id                                                  String                @unique @db.VarChar(100)
+  created_at                                                          DateTime              @default(now()) @db.Timestamptz(6)
+  updated_at                                                          DateTime?             @db.Timestamptz(6)
+  person                                                              person                @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_citizen_person")
+  user                                                                User?                 @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_citizen_user")
+  enrolment                                                           enrolment[]
+  family_relationship_family_relationship_citizen_idTocitizen         family_relationship[] @relation("family_relationship_citizen_idTocitizen")
+  family_relationship_family_relationship_related_citizen_idTocitizen family_relationship[] @relation("family_relationship_related_citizen_idTocitizen")
+}
+
+model commune {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  district_id String      @db.Uuid
+  name        String      @db.VarChar(255)
+  created_at  DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime?   @db.Timestamptz(6)
+  district    district    @relation(fields: [district_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_commune_district")
+  fokontany   fokontany[]
+
+  @@unique([district_id, name], map: "uq_commune_district_name")
+}
+
+model contact_method {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  person_id   String       @db.Uuid
+  type        contact_type @default(EMAIL)
+  value       String       @db.VarChar(255)
+  is_verified Boolean      @default(false)
+  is_primary  Boolean      @default(false)
+  created_at  DateTime     @default(now()) @db.Timestamptz(6)
+  person      person       @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_contact_method_person")
+}
+
+model country {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  iso2_code        String    @unique(map: "uq_country_iso2") @db.Char(2)
+  iso3_code        String    @unique(map: "uq_country_iso3") @db.Char(3)
+  name             String    @unique(map: "uq_country_name") @db.VarChar(255)
+  nationality_name String?   @db.VarChar(255)
+  created_at       DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime? @db.Timestamptz(6)
+  person           person[]
+  region           region[]
+}
+
+model district {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  region_id  String    @db.Uuid
+  name       String    @db.VarChar(255)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+  commune    commune[]
+  region     region    @relation(fields: [region_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_district_region")
+
+  @@unique([region_id, name], map: "uq_district_region_name")
+}
+
+model document {
+  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  enrolment_id        String                @db.Uuid
+  document_type_id    String                @db.Uuid
+  created_at          DateTime              @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?             @db.Timestamptz(6)
+  enrolment           enrolment             @relation(fields: [enrolment_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_document_enrolment")
+  document_type       document_type         @relation(fields: [document_type_id], references: [id], onUpdate: NoAction, map: "fk_document_type")
+  document_file       document_file?
+  document_mrz        document_mrz?
+  document_ocr_result document_ocr_result[]
+
+  @@index([document_type_id], map: "idx_document_document_type_id")
+  @@index([enrolment_id], map: "idx_document_enrolment_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model document_file {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  document_id       String             @unique(map: "uq_document_file_back", where: raw("(side = 'BACK'::document_file_side)")) @db.Uuid
+  side              document_file_side
+  storage_key       String             @unique
+  original_filename String?            @db.VarChar(255)
+  mime_type         String             @db.VarChar(100)
+  file_size         BigInt
+  checksum          String?            @db.VarChar(128)
+  created_at        DateTime           @default(now()) @db.Timestamptz(6)
+  document          document           @relation(fields: [document_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_document_file_document")
+
+  @@index([document_id], map: "idx_document_file_document_id")
+}
+
+model document_mrz {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  document_id  String   @unique @db.Uuid
+  raw_mrz      String
+  processed_at DateTime @default(now()) @db.Timestamptz(6)
+  document     document @relation(fields: [document_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_document_mrz_document")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model document_ocr_result {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  document_id      String   @db.Uuid
+  engine_name      String   @db.VarChar(255)
+  engine_version   String   @db.VarChar(255)
+  extracted_text   String
+  confidence_score Decimal  @default(0) @db.Decimal(5, 2)
+  processed_at     DateTime @default(now()) @db.Timestamptz(6)
+  document         document @relation(fields: [document_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_document_ocr_document")
+
+  @@index([document_id], map: "idx_document_ocr_document_id")
+}
+
+model document_type {
+  id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String            @unique @db.VarChar(255)
+  description       String?
+  evidence_strength evidence_strength @default(WEAK)
+  requires_mrz      Boolean           @default(false)
+  supports_ocr      Boolean           @default(false)
+  requires_original Boolean           @default(true)
+  created_at        DateTime          @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime?         @db.Timestamptz(6)
+  document          document[]
+}
+
+model enrolment {
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  agent_id        String           @db.Uuid
+  citizen_id      String           @db.Uuid
+  application_id  String           @unique(map: "uq_enrolment_application") @db.VarChar(255)
+  enrolment_type  enrolment_type   @default(NEW)
+  created_offline Boolean          @default(false)
+  sync_status     sync_status      @default(PENDING)
+  created_at      DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime?        @db.Timestamptz(6)
+  document        document[]
+  agent           agent            @relation(fields: [agent_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_enrolment_agent")
+  citizen         citizen          @relation(fields: [citizen_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_enrolment_citizen")
+  face_biometric  face_biometric[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model face_biometric {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  enrolment_id    String    @db.Uuid
+  image_file_path String
+  model_name      String    @db.VarChar(255)
+  model_version   String    @db.VarChar(255)
+  embedding       String
+  quality_score   Decimal   @default(0) @db.Decimal(5, 2)
+  face_detected   Boolean   @default(false)
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime? @db.Timestamptz(6)
+  enrolment       enrolment @relation(fields: [enrolment_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_face_biometric_enrolment")
+
+  @@index([enrolment_id], map: "idx_face_biometric_enrolment_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model family_relationship {
+  id                                                      String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  citizen_id                                              String            @db.Uuid
+  related_citizen_id                                      String?           @db.Uuid
+  related_person_name                                     String?           @db.VarChar(255)
+  relationship_type                                       relationship_type
+  created_at                                              DateTime          @default(now()) @db.Timestamptz(6)
+  citizen_family_relationship_citizen_idTocitizen         citizen           @relation("family_relationship_citizen_idTocitizen", fields: [citizen_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_family_relationship_citizen")
+  citizen_family_relationship_related_citizen_idTocitizen citizen?          @relation("family_relationship_related_citizen_idTocitizen", fields: [related_citizen_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_family_relationship_related_citizen")
+}
+
+model fokontany {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  commune_id String    @db.Uuid
+  name       String    @db.VarChar(255)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+  address    address[]
+  centre     centre[]
+  commune    commune   @relation(fields: [commune_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_fokontany_commune")
+
+  @@unique([commune_id, name], map: "uq_fokontany_commune_name")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model person {
+  id                  String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  first_name          String?          @db.VarChar(255)
+  last_name           String           @db.VarChar(255)
+  date_of_birth       DateTime?        @db.Date
+  birth_place         String?          @db.VarChar(255)
+  country_of_birth_id String           @db.Uuid
+  sex                 sex              @default(M)
+  date_of_death       DateTime?        @db.Date
+  created_at          DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime?        @db.Timestamptz(6)
+  address             address[]
+  agent               agent?
+  citizen             citizen?
+  contact_method      contact_method[]
+  country             country          @relation(fields: [country_of_birth_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_person_country_of_birth")
+}
+
+model region {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  country_id String     @db.Uuid
+  name       String     @db.VarChar(255)
+  created_at DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at DateTime?  @db.Timestamptz(6)
+  district   district[]
+  country    country    @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_region_country")
+
+  @@unique([country_id, name], map: "uq_region_country_name")
+}
+
+enum contact_type {
+  EMAIL
+  PHONE
+}
+
+enum document_file_side {
+  FRONT
+  BACK
+  OTHER
+}
+
+enum enrolment_type {
+  NEW
+  UPDATE
+  CORRECTION
+}
+
+enum evidence_strength {
+  SUPERIOR
+  STRONG
+  FAIR
+  WEAK
+}
+
+enum occupancy_type {
+  OWNER
+  TENANT
+  FAMILY
+  OTHERS
+}
+
+enum relationship_type {
+  FATHER
+  MOTHER
+  SPOUSE
+}
+
+enum sex {
+  M
+  F
+  OTHERS
+}
+
+enum sync_status {
+  PENDING
+  SYNCED
+  FAILED
 }
