@@ -4,6 +4,6 @@ import { GeographyService } from './geography.service';
 
 @Module({
   controllers: [GeographyController],
-  providers: [GeographyService]
+  providers: [GeographyService],
 })
 export class GeographyModule {}
