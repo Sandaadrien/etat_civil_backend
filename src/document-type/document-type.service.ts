@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { prisma } from '../lib/prisma';
-
+/* Comments */
 @Injectable()
 export class DocumentTypeService {
   async findAll() {
