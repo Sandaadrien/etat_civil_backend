@@ -1,10 +1,15 @@
 name: NestJS CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
+    branches:
+      - develop
+      - main
+
+  push:
+    branches:
+      - develop
+      - main
 
 jobs:
   test-and-build:
@@ -33,6 +38,8 @@ jobs:
 
       - name: Run tests
         run: pnpm test
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Build
         run: pnpm run build
