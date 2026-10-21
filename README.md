@@ -7,6 +7,21 @@ Ce backend fournit les APIs communes aux deux applications de la plateforme :
 - **APP 1 — Enrolment App** : enrôlement et création des identités par les agents habilités.
 - **APP 2 — Citizen App** : consultation, utilisation et gestion de l'identité numérique par les citoyens.
 
+## Requirement
+
+Ollama installer localement
+cd actes-naissance/
+python -m pip install -r requirements.txt
+
+commande pour lancer le LLM en local
+$ uvicorn api:app --host 127.0.0.1 --port 8000 --reload
+
+- GET /health permet de vérifier que le serveur répond.
+- POST /extract reçoit un fichier sous le nom de champ file.
+
+ouvrir swagger
+http://127.0.0.1:8000/docs
+
 ## Architecture
 
 ```
