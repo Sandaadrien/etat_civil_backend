@@ -1,0 +1,52 @@
+name: Code quality
+
+# Independent from the "NestJS CI" workflow: separate file, separate runner, no "needs",
+# read-only permissions, no secrets, and it never fails the run (fail_on: never).
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: code-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality (backend)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: quality/requirements.txt
+
+      - name: Install Lizard and Semgrep
+        run: pip install -r quality/requirements.txt
+
+      - name: Analyze backend
+        run: python quality/run.py --target backend
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-backend
+          path: quality-results/
+          if-no-files-found: ignore

@@ -1,0 +1,33 @@
+# Quality gate configuration (report only: it never blocks the existing CI).
+# Keep these values aligned with the sub-module settings of the dashboard.
+
+# When the job must fail:
+#   critical : at least one critical finding
+#   warning  : at least one warning or critical finding
+#   never    : never fail, only report (used here: this repository has its own CI)
+fail_on: never
+
+targets:
+  backend:
+    label: Backend (NestJS)
+    paths:
+      - src
+    lizard:
+      languages: [javascript, typescript]
+      exclude: ["*/node_modules/*"]
+      thresholds:
+        cyclomatic_complexity: 10
+        nloc: 50
+        parameter_count: 5
+        token_count: 500
+      # A violation is critical from threshold x this factor, otherwise it is a warning.
+      critical_multiplier: 1.5
+      # Do not count ?? and ?. as conditions.
+      ignore_nullish_and_optional_chaining: true
+    semgrep:
+      # Local rule packs of quality/rules (name without extension), or registry ids such as p/typescript.
+      configs: [style-typescript, best-practices-nestjs]
+      exclude: [node_modules, dist, build, coverage]
+      exclude_rules: []
+      # INFO, WARNING or ERROR: findings below this level are ignored.
+      min_severity: INFO

@@ -1,0 +1,47 @@
+# React and Next.js best-practice rules (TSX / JSX).
+rules:
+  - id: react-no-index-as-key
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: Do not use the array index as a React key. Use a stable identifier so that list updates are rendered correctly.
+    patterns:
+      - pattern-either:
+          - pattern: <$E ... key={$IDX} ... />
+          - pattern: <$E ... key={$IDX} ...>...</$E>
+      - metavariable-regex:
+          metavariable: $IDX
+          regex: ^(i|idx|index)$
+    metadata:
+      category: best-practice
+
+  - id: react-no-dangerously-set-inner-html
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: Avoid dangerouslySetInnerHTML. If it is unavoidable, sanitize the content first.
+    pattern-either:
+      - pattern: <$E ... dangerouslySetInnerHTML={...} ... />
+      - pattern: <$E ... dangerouslySetInnerHTML={...} ...>...</$E>
+    metadata:
+      category: best-practice
+
+  - id: next-use-image-component
+    languages: [typescript, javascript]
+    severity: WARNING
+    message: Use the next/image Image component instead of a plain img element to get automatic optimization.
+    pattern-either:
+      - pattern: <img ... />
+      - pattern: <img ...>...</img>
+    metadata:
+      category: performance
+
+  - id: react-no-array-index-state-update
+    languages: [typescript, javascript]
+    severity: INFO
+    message: Prefer the functional form of the state setter when the new value depends on the previous one.
+    patterns:
+      - pattern: $SET($STATE + 1)
+      - metavariable-regex:
+          metavariable: $SET
+          regex: ^set[A-Z]\w*$
+    metadata:
+      category: best-practice
