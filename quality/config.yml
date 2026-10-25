@@ -20,7 +20,7 @@ issues:
   reopen_resolved: true   # reopen an issue closed by the gate when its finding comes back
 
 targets:
-  #------ NestJS ----------
+  #------ NestJS
   backend:
     label: Backend (NestJS)
     paths:

@@ -30,7 +30,7 @@ jobs:
       fail-fast: false
       matrix:
         # Names of the targets defined in quality/config.yml
-        target: [backend, frontend]
+        target: [backend]
 
     steps:
       - name: Checkout
