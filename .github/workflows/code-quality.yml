@@ -1,30 +1,36 @@
 name: Code quality
 
-# Independent from the "NestJS CI" workflow: separate file, separate runner, no "needs",
-# read-only permissions, no secrets, and it never fails the run (fail_on: never).
 on:
-  pull_request:
-    branches:
-      - develop
-      - main
   push:
-    branches:
-      - develop
-      - main
+    branches: [main, develop]
+  pull_request:
   workflow_dispatch:
+    inputs:
+      issue_on_warning:
+        description: "Create issues for warnings too?"
+        type: choice
+        options: [config, "yes", "no"]
+        default: config
 
+# A new push cancels the analysis still running for the same branch.
 concurrency:
   group: code-quality-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   quality:
-    name: Quality (backend)
+    name: Quality (${{ matrix.target }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        # Names of the targets defined in quality/config.yml
+        target: [backend, frontend]
 
     steps:
       - name: Checkout
@@ -40,13 +46,17 @@ jobs:
       - name: Install Lizard and Semgrep
         run: pip install -r quality/requirements.txt
 
-      - name: Analyze backend
-        run: python quality/run.py --target backend
+      # Issues are only synchronised outside pull requests (push on main, manual run).
+      - name: Analyze ${{ matrix.target }}
+        run: python quality/run.py --target ${{ matrix.target }} ${{ github.event_name != 'pull_request' && '--sync-issues' || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          QUALITY_ISSUE_ON_WARNING: ${{ (inputs.issue_on_warning == 'yes' && 'true') || (inputs.issue_on_warning == 'no' && 'false') || '' }}
 
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: quality-backend
+          name: quality-${{ matrix.target }}
           path: quality-results/
           if-no-files-found: ignore

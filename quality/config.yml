@@ -1,17 +1,30 @@
-# Quality gate configuration (report only: it never blocks the existing CI).
+# Quality gate configuration, one entry per target (the two code bases of the repository).
 # Keep these values aligned with the sub-module settings of the dashboard.
 
 # When the job must fail:
-#   critical : at least one critical finding
+#   critical : at least one critical finding (recommended)
 #   warning  : at least one warning or critical finding
-#   never    : never fail, only report (used here: this repository has its own CI)
-fail_on: never
+#   never    : never fail, only report
+fail_on: critical
+
+# GitHub issues, created with:  python quality/run.py --target <name> --sync-issues
+issues:
+  on_critical: true       # create one detailed issue per critical function / rule
+  on_warning: false       # also create issues for warnings (QUALITY_ISSUE_ON_WARNING overrides it)
+  on_info: false          # also create issues for information findings (Semgrep only)
+  warning_mode: digest    # digest = one issue per target | individual = one issue per warning
+  on_change: comment      # comment | update | ignore, when an existing issue changes
+  branch: main            # in GitHub Actions, issues are only synchronised from this branch
+  max_per_run: 20         # safety limit for the number of issues created in one run
+  close_resolved: true    # close an issue when its finding disappears
+  reopen_resolved: true   # reopen an issue closed by the gate when its finding comes back
 
 targets:
+  # ---------------------------------------------------------------- NestJS
   backend:
     label: Backend (NestJS)
     paths:
-      - src
+      - backend/src
     lizard:
       languages: [javascript, typescript]
       exclude: ["*/node_modules/*"]
@@ -30,4 +43,26 @@ targets:
       exclude: [node_modules, dist, build, coverage]
       exclude_rules: []
       # INFO, WARNING or ERROR: findings below this level are ignored.
+      min_severity: INFO
+
+  # ----------------------------------------------------------------- React
+  frontend:
+    label: Frontend (React)
+    paths:
+      - frontend/src
+    lizard:
+      # TypeScript only: .tsx and .jsx files are not measured by Lizard.
+      languages: [typescript]
+      exclude: ["*/node_modules/*"]
+      thresholds:
+        cyclomatic_complexity: 10
+        nloc: 50
+        parameter_count: 5
+        token_count: 500
+      critical_multiplier: 1.5
+      ignore_nullish_and_optional_chaining: true
+    semgrep:
+      configs: [style-typescript, best-practices-react-next]
+      exclude: [node_modules, dist, build, .next, coverage]
+      exclude_rules: []
       min_severity: INFO

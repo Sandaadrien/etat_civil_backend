@@ -19,25 +19,16 @@ from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 import lizard
 import yaml
 
-METRICS = ("cyclomatic_complexity", "nloc", "parameter_count", "token_count")
-METRIC_LABELS = {
-    "cyclomatic_complexity": "Complexity",
-    "nloc": "Lines",
-    "parameter_count": "Parameters",
-    "token_count": "Tokens",
-}
+from common import LEVEL_RANK, METRIC_LABELS, METRICS, QualityError
+from issues import run_issue_sync
+
 SEMGREP_LEVELS = {"ERROR": "critical", "WARNING": "warning", "INFO": "info"}
 SEMGREP_RANK = {"INFO": 0, "WARNING": 1, "ERROR": 2}
-LEVEL_RANK = {"critical": 0, "warning": 1, "info": 2}
 LEVEL_ICONS = {"ok": "OK", "warning": "WARNING", "critical": "CRITICAL"}
 REMOTE_PREFIXES = ("p/", "r/", "http://", "https://", "auto")
 
 # GitHub shows at most 10 error and 10 warning annotations per step.
 MAX_ANNOTATIONS = 10
-
-
-class QualityError(Exception):
-    """Configuration or tool error (exit code 2)."""
 
 
 # ---------------------------------------------------------------------------
@@ -143,6 +134,7 @@ def run_lizard(target: Dict[str, Any]) -> Dict[str, Any]:
                 "start_line": function.start_line,
                 "end_line": function.end_line,
                 "level": level,
+                "metrics": {metric: getattr(function, metric) for metric in METRICS},
                 "violations": violations,
             })
 
@@ -177,6 +169,16 @@ def resolve_config(entry: str, rules_dir: Path) -> str:
         if candidate.is_file():
             return str(candidate)
     raise QualityError(f"Semgrep rule pack not found: {entry} (looked in {rules_dir})")
+
+
+def read_snippet(path: str, start: int, end: int, max_lines: int = 8) -> str:
+    """The matched lines, read from the checked out file (Semgrep does not return them without login)."""
+    try:
+        with open(path, encoding="utf-8", errors="replace") as handle:
+            lines = handle.read().splitlines()
+    except OSError:
+        return ""
+    return "\n".join(lines[max(start - 1, 0):min(end, start - 1 + max_lines)])
 
 
 def run_semgrep(target: Dict[str, Any], rules_dir: Path) -> Dict[str, Any]:
@@ -221,6 +223,9 @@ def run_semgrep(target: Dict[str, Any], rules_dir: Path) -> Dict[str, Any]:
             "start_line": raw.get("start", {}).get("line", 0),
             "end_line": raw.get("end", {}).get("line", 0),
         })
+    for finding in findings:
+        if finding["level"] == "critical":
+            finding["snippet"] = read_snippet(finding["file"], finding["start_line"], finding["end_line"])
     findings.sort(key=lambda f: (LEVEL_RANK[f["level"]], f["file"], f["start_line"]))
 
     counts = {"critical": 0, "warning": 0, "info": 0}
@@ -262,7 +267,6 @@ def describe_violation(violation: Dict[str, Any]) -> str:
     if violation["level"] == "critical":
         return f"{label} {violation['value']} >= {violation['critical_threshold']:g}"
     return f"{label} {violation['value']} > {violation['threshold']} (critical at {violation['critical_threshold']:g})"
-    # return f"{label} {violation['value']} > {violation['threshold']}"
 
 
 def cell(text: Any) -> str:
@@ -407,6 +411,9 @@ def main() -> int:
     parser.add_argument("--config", type=Path, default=here / "config.yml")
     parser.add_argument("--rules", type=Path, default=here / "rules", help="Folder of local Semgrep rule packs")
     parser.add_argument("--output", type=Path, default=Path("quality-results"))
+    parser.add_argument("--sync-issues", action="store_true", help="Create, update and close GitHub issues (see 'issues' in config.yml)")
+    parser.add_argument("--repo", default=os.getenv("GITHUB_REPOSITORY"), help="owner/name of the repository receiving the issues")
+    parser.add_argument("--dry-run", action="store_true", help="With --sync-issues: show what would be done, change nothing")
     args = parser.parse_args()
 
     try:
@@ -451,6 +458,9 @@ def main() -> int:
     print_findings(items)
     if os.getenv("GITHUB_ACTIONS"):
         emit_annotations(items)
+
+    if args.sync_issues:
+        run_issue_sync(args.target, label, config.get("issues"), lizard_result, semgrep_result, args.repo, args.dry_run)
 
     print(f"{label}: {critical} critical, {warnings} warnings "
           f"(complexity {lizard_result['summary']['critical']}/{lizard_result['summary']['warnings']}, "
