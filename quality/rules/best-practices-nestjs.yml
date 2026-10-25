@@ -1,0 +1,37 @@
+# NestJS best-practice rules.
+rules:
+  - id: nest-no-manual-provider-instance
+    languages: [typescript]
+    severity: WARNING
+    message: Do not instantiate providers manually with new. Declare them in a module and inject them through the constructor.
+    patterns:
+      - pattern: new $S(...)
+      - metavariable-regex:
+          metavariable: $S
+          regex: ^\w+(Service|Repository|Guard|Interceptor)$
+    metadata:
+      category: best-practice
+
+  - id: nest-throw-http-exception
+    languages: [typescript]
+    severity: WARNING
+    message: Throw a Nest HttpException (NotFoundException, BadRequestException, ...) instead of a generic Error so the client receives a proper HTTP status.
+    pattern: throw new Error(...)
+    metadata:
+      category: best-practice
+
+  - id: nest-no-direct-process-env
+    languages: [typescript]
+    severity: WARNING
+    message: Read configuration through ConfigService instead of process.env, so that it is validated and easy to mock in tests.
+    pattern: process.env.$VAR
+    metadata:
+      category: best-practice
+
+  - id: nest-no-process-exit
+    languages: [typescript]
+    severity: ERROR
+    message: Do not call process.exit in a Nest application. It bypasses the shutdown hooks. Throw an exception or let the framework stop gracefully.
+    pattern: process.exit(...)
+    metadata:
+      category: best-practice
