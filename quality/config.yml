@@ -20,11 +20,11 @@ issues:
   reopen_resolved: true   # reopen an issue closed by the gate when its finding comes back
 
 targets:
-  # ---------------------------------------------------------------- NestJS
+  #------ NestJS ----------
   backend:
     label: Backend (NestJS)
     paths:
-      - backend/src
+      - src
     lizard:
       languages: [javascript, typescript]
       exclude: ["*/node_modules/*"]
@@ -43,26 +43,4 @@ targets:
       exclude: [node_modules, dist, build, coverage]
       exclude_rules: []
       # INFO, WARNING or ERROR: findings below this level are ignored.
-      min_severity: INFO
-
-  # ----------------------------------------------------------------- React
-  frontend:
-    label: Frontend (React)
-    paths:
-      - frontend/src
-    lizard:
-      # TypeScript only: .tsx and .jsx files are not measured by Lizard.
-      languages: [typescript]
-      exclude: ["*/node_modules/*"]
-      thresholds:
-        cyclomatic_complexity: 10
-        nloc: 50
-        parameter_count: 5
-        token_count: 500
-      critical_multiplier: 1.5
-      ignore_nullish_and_optional_chaining: true
-    semgrep:
-      configs: [style-typescript, best-practices-react-next]
-      exclude: [node_modules, dist, build, .next, coverage]
-      exclude_rules: []
       min_severity: INFO
