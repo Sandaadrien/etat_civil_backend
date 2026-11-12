@@ -1,12 +1,13 @@
 import io
 from pathlib import Path
-
+from mock_data import MOCK_ACTE
 import fitz
 import pytesseract
 from PIL import Image, UnidentifiedImageError
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from ollama import ResponseError
 from pydantic import ValidationError
+from fastapi.middleware.cors import CORSMiddleware
 
 from extract_birth import extraire_acte
 
@@ -15,6 +16,14 @@ app = FastAPI(
     title="API d'extraction des actes de naissance",
     version="1.0.0",
     description="OCR et extraction via un LLM local.",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 MAX_FILE_SIZE = 15 * 1024 * 1024  # 15 Mo
@@ -94,6 +103,13 @@ def health():
 def extract(file: UploadFile = File(...)):
     nom_fichier = file.filename or ""
     extension = Path(nom_fichier).suffix.lower()
+    
+    # =====================================
+    # MODE MOCK (DEVELOPPEMENT)
+    # =====================================
+    MOCK_MODE=True
+    if MOCK_MODE:
+            return MOCK_ACTE.model_dump(mode="json")
 
     if extension not in ALLOWED_EXTENSIONS:
         raise HTTPException(

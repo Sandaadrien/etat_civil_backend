@@ -2,11 +2,11 @@ import {
   BadRequestException,
   Controller,
   Post,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 
 import { UploadsService } from './uploads.service';
@@ -17,12 +17,14 @@ export class UploadsController {
 
   @Post('documents')
   @UseInterceptors(
-    FileInterceptor('file', {
+    FilesInterceptor('file', 10, {
       storage: memoryStorage(),
+
       limits: {
-        fileSize: 10 * 1024 * 1024,
-        files: 10,
+        fileSize: 15 * 1024 * 1024, // 15 Mo par fichier
+        files: 10, // Maximum 10 fichiers
       },
+
       fileFilter: (_req, file, callback) => {
         const allowedTypes = [
           'image/jpeg',
@@ -34,7 +36,7 @@ export class UploadsController {
         if (!allowedTypes.includes(file.mimetype)) {
           return callback(
             new BadRequestException(
-              'Formats autorisés : JPEG, PNG, WEBP et PDF',
+              `Format non autorisé : ${file.mimetype}. Formats acceptés : JPEG, PNG, WEBP et PDF.`,
             ),
             false,
           );
@@ -44,7 +46,20 @@ export class UploadsController {
       },
     }),
   )
-  uploadDocument(@UploadedFile() file: Express.Multer.File) {
-    return this.uploadsService.saveDocument(file);
+  async uploadDocuments(@UploadedFiles() files: Express.Multer.File[]) {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('Veuillez envoyer au moins un fichier.');
+    }
+
+    // Enregistrement de tous les documents
+    const documents = await Promise.all(
+      files.map((file) => this.uploadsService.saveDocument(file)),
+    );
+
+    return {
+      message: 'Documents enregistrés avec succès.',
+      total: documents.length,
+      documents,
+    };
   }
 }

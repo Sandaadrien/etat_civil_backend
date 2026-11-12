@@ -89,7 +89,7 @@ export type district = Prisma.districtModel
 export type document = Prisma.documentModel
 /**
  * Model document_file
- * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * 
  */
 export type document_file = Prisma.document_fileModel
 /**
@@ -99,7 +99,7 @@ export type document_file = Prisma.document_fileModel
 export type document_mrz = Prisma.document_mrzModel
 /**
  * Model document_ocr_result
- * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * 
  */
 export type document_ocr_result = Prisma.document_ocr_resultModel
 /**
@@ -114,12 +114,12 @@ export type document_type = Prisma.document_typeModel
 export type enrolment = Prisma.enrolmentModel
 /**
  * Model face_biometric
- * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * 
  */
 export type face_biometric = Prisma.face_biometricModel
 /**
  * Model family_relationship
- * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * 
  */
 export type family_relationship = Prisma.family_relationshipModel
 /**
@@ -129,7 +129,7 @@ export type family_relationship = Prisma.family_relationshipModel
 export type fokontany = Prisma.fokontanyModel
 /**
  * Model person
- * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * 
  */
 export type person = Prisma.personModel
 /**
@@ -137,3 +137,53 @@ export type person = Prisma.personModel
  * 
  */
 export type region = Prisma.regionModel
+/**
+ * Model citizen_activation
+ * 
+ */
+export type citizen_activation = Prisma.citizen_activationModel
+/**
+ * Model Jwks
+ * 
+ */
+export type Jwks = Prisma.JwksModel
+/**
+ * Model OauthClient
+ * 
+ */
+export type OauthClient = Prisma.OauthClientModel
+/**
+ * Model OauthResource
+ * 
+ */
+export type OauthResource = Prisma.OauthResourceModel
+/**
+ * Model OauthClientResource
+ * 
+ */
+export type OauthClientResource = Prisma.OauthClientResourceModel
+/**
+ * Model OauthRefreshToken
+ * 
+ */
+export type OauthRefreshToken = Prisma.OauthRefreshTokenModel
+/**
+ * Model OauthAccessToken
+ * 
+ */
+export type OauthAccessToken = Prisma.OauthAccessTokenModel
+/**
+ * Model OauthConsent
+ * 
+ */
+export type OauthConsent = Prisma.OauthConsentModel
+/**
+ * Model OauthClientAssertion
+ * 
+ */
+export type OauthClientAssertion = Prisma.OauthClientAssertionModel
+/**
+ * Model DeviceCode
+ * 
+ */
+export type DeviceCode = Prisma.DeviceCodeModel

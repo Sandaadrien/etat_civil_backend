@@ -11,6 +11,13 @@ import { ReferenceModule } from './reference/reference.module';
 import { DocumentTypeService } from './document-type/document-type.service';
 import { DocumentTypeModule } from './document-type/document-type.module';
 import { UploadsModule } from './uploads/uploads.module';
+import { DashboardController } from './dashboard/dashboard.controller';
+import { DashboardService } from './dashboard/dashboard.service';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { ActivationModule } from './activation/activation.module';
+import { OauthModule } from './oauth/oauth.module';
+import { CitizenAuthController } from './citizen-auth/citizen-auth.controller';
+import { CitizenAuthModule } from './citizen-auth/citizen-auth.module';
 
 @Module({
   imports: [
@@ -26,8 +33,12 @@ import { UploadsModule } from './uploads/uploads.module';
     ReferenceModule,
     DocumentTypeModule,
     UploadsModule,
+    DashboardModule,
+    ActivationModule,
+    OauthModule,
+    CitizenAuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, DocumentTypeService],
+  controllers: [AppController, DashboardController, CitizenAuthController],
+  providers: [AppService, DocumentTypeService, DashboardService],
 })
 export class AppModule {}

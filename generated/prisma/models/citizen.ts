@@ -192,6 +192,7 @@ export type citizenWhereInput = {
   updated_at?: Prisma.DateTimeNullableFilter<"citizen"> | Date | string | null
   person?: Prisma.XOR<Prisma.PersonScalarRelationFilter, Prisma.personWhereInput>
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  citizen_activation?: Prisma.XOR<Prisma.Citizen_activationNullableScalarRelationFilter, Prisma.citizen_activationWhereInput> | null
   enrolment?: Prisma.EnrolmentListRelationFilter
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.Family_relationshipListRelationFilter
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.Family_relationshipListRelationFilter
@@ -206,6 +207,7 @@ export type citizenOrderByWithRelationInput = {
   updated_at?: Prisma.SortOrderInput | Prisma.SortOrder
   person?: Prisma.personOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  citizen_activation?: Prisma.citizen_activationOrderByWithRelationInput
   enrolment?: Prisma.enrolmentOrderByRelationAggregateInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipOrderByRelationAggregateInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipOrderByRelationAggregateInput
@@ -223,6 +225,7 @@ export type citizenWhereUniqueInput = Prisma.AtLeast<{
   updated_at?: Prisma.DateTimeNullableFilter<"citizen"> | Date | string | null
   person?: Prisma.XOR<Prisma.PersonScalarRelationFilter, Prisma.personWhereInput>
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  citizen_activation?: Prisma.XOR<Prisma.Citizen_activationNullableScalarRelationFilter, Prisma.citizen_activationWhereInput> | null
   enrolment?: Prisma.EnrolmentListRelationFilter
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.Family_relationshipListRelationFilter
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.Family_relationshipListRelationFilter
@@ -259,6 +262,7 @@ export type citizenCreateInput = {
   updated_at?: Date | string | null
   person: Prisma.personCreateNestedOneWithoutCitizenInput
   user?: Prisma.UserCreateNestedOneWithoutCitizenInput
+  citizen_activation?: Prisma.citizen_activationCreateNestedOneWithoutCitizenInput
   enrolment?: Prisma.enrolmentCreateNestedManyWithoutCitizenInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
@@ -271,6 +275,7 @@ export type citizenUncheckedCreateInput = {
   national_unique_id: string
   created_at?: Date | string
   updated_at?: Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedCreateNestedOneWithoutCitizenInput
   enrolment?: Prisma.enrolmentUncheckedCreateNestedManyWithoutCitizenInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
@@ -283,6 +288,7 @@ export type citizenUpdateInput = {
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   person?: Prisma.personUpdateOneRequiredWithoutCitizenNestedInput
   user?: Prisma.UserUpdateOneWithoutCitizenNestedInput
+  citizen_activation?: Prisma.citizen_activationUpdateOneWithoutCitizenNestedInput
   enrolment?: Prisma.enrolmentUpdateManyWithoutCitizenNestedInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_citizen_idTocitizenNestedInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_related_citizen_idTocitizenNestedInput
@@ -295,6 +301,7 @@ export type citizenUncheckedUpdateInput = {
   national_unique_id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedUpdateOneWithoutCitizenNestedInput
   enrolment?: Prisma.enrolmentUncheckedUpdateManyWithoutCitizenNestedInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUncheckedUpdateManyWithoutCitizen_family_relationship_citizen_idTocitizenNestedInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUncheckedUpdateManyWithoutCitizen_family_relationship_related_citizen_idTocitizenNestedInput
@@ -470,12 +477,27 @@ export type citizenUncheckedUpdateOneWithoutPersonNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.citizenUpdateToOneWithWhereWithoutPersonInput, Prisma.citizenUpdateWithoutPersonInput>, Prisma.citizenUncheckedUpdateWithoutPersonInput>
 }
 
+export type citizenCreateNestedOneWithoutCitizen_activationInput = {
+  create?: Prisma.XOR<Prisma.citizenCreateWithoutCitizen_activationInput, Prisma.citizenUncheckedCreateWithoutCitizen_activationInput>
+  connectOrCreate?: Prisma.citizenCreateOrConnectWithoutCitizen_activationInput
+  connect?: Prisma.citizenWhereUniqueInput
+}
+
+export type citizenUpdateOneRequiredWithoutCitizen_activationNestedInput = {
+  create?: Prisma.XOR<Prisma.citizenCreateWithoutCitizen_activationInput, Prisma.citizenUncheckedCreateWithoutCitizen_activationInput>
+  connectOrCreate?: Prisma.citizenCreateOrConnectWithoutCitizen_activationInput
+  upsert?: Prisma.citizenUpsertWithoutCitizen_activationInput
+  connect?: Prisma.citizenWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.citizenUpdateToOneWithWhereWithoutCitizen_activationInput, Prisma.citizenUpdateWithoutCitizen_activationInput>, Prisma.citizenUncheckedUpdateWithoutCitizen_activationInput>
+}
+
 export type citizenCreateWithoutUserInput = {
   id?: string
   national_unique_id: string
   created_at?: Date | string
   updated_at?: Date | string | null
   person: Prisma.personCreateNestedOneWithoutCitizenInput
+  citizen_activation?: Prisma.citizen_activationCreateNestedOneWithoutCitizenInput
   enrolment?: Prisma.enrolmentCreateNestedManyWithoutCitizenInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
@@ -487,6 +509,7 @@ export type citizenUncheckedCreateWithoutUserInput = {
   national_unique_id: string
   created_at?: Date | string
   updated_at?: Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedCreateNestedOneWithoutCitizenInput
   enrolment?: Prisma.enrolmentUncheckedCreateNestedManyWithoutCitizenInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
@@ -514,6 +537,7 @@ export type citizenUpdateWithoutUserInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   person?: Prisma.personUpdateOneRequiredWithoutCitizenNestedInput
+  citizen_activation?: Prisma.citizen_activationUpdateOneWithoutCitizenNestedInput
   enrolment?: Prisma.enrolmentUpdateManyWithoutCitizenNestedInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_citizen_idTocitizenNestedInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_related_citizen_idTocitizenNestedInput
@@ -525,6 +549,7 @@ export type citizenUncheckedUpdateWithoutUserInput = {
   national_unique_id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedUpdateOneWithoutCitizenNestedInput
   enrolment?: Prisma.enrolmentUncheckedUpdateManyWithoutCitizenNestedInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUncheckedUpdateManyWithoutCitizen_family_relationship_citizen_idTocitizenNestedInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUncheckedUpdateManyWithoutCitizen_family_relationship_related_citizen_idTocitizenNestedInput
@@ -537,6 +562,7 @@ export type citizenCreateWithoutEnrolmentInput = {
   updated_at?: Date | string | null
   person: Prisma.personCreateNestedOneWithoutCitizenInput
   user?: Prisma.UserCreateNestedOneWithoutCitizenInput
+  citizen_activation?: Prisma.citizen_activationCreateNestedOneWithoutCitizenInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
 }
@@ -548,6 +574,7 @@ export type citizenUncheckedCreateWithoutEnrolmentInput = {
   national_unique_id: string
   created_at?: Date | string
   updated_at?: Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedCreateNestedOneWithoutCitizenInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
 }
@@ -575,6 +602,7 @@ export type citizenUpdateWithoutEnrolmentInput = {
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   person?: Prisma.personUpdateOneRequiredWithoutCitizenNestedInput
   user?: Prisma.UserUpdateOneWithoutCitizenNestedInput
+  citizen_activation?: Prisma.citizen_activationUpdateOneWithoutCitizenNestedInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_citizen_idTocitizenNestedInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_related_citizen_idTocitizenNestedInput
 }
@@ -586,6 +614,7 @@ export type citizenUncheckedUpdateWithoutEnrolmentInput = {
   national_unique_id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedUpdateOneWithoutCitizenNestedInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUncheckedUpdateManyWithoutCitizen_family_relationship_citizen_idTocitizenNestedInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUncheckedUpdateManyWithoutCitizen_family_relationship_related_citizen_idTocitizenNestedInput
 }
@@ -597,6 +626,7 @@ export type citizenCreateWithoutFamily_relationship_family_relationship_citizen_
   updated_at?: Date | string | null
   person: Prisma.personCreateNestedOneWithoutCitizenInput
   user?: Prisma.UserCreateNestedOneWithoutCitizenInput
+  citizen_activation?: Prisma.citizen_activationCreateNestedOneWithoutCitizenInput
   enrolment?: Prisma.enrolmentCreateNestedManyWithoutCitizenInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
 }
@@ -608,6 +638,7 @@ export type citizenUncheckedCreateWithoutFamily_relationship_family_relationship
   national_unique_id: string
   created_at?: Date | string
   updated_at?: Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedCreateNestedOneWithoutCitizenInput
   enrolment?: Prisma.enrolmentUncheckedCreateNestedManyWithoutCitizenInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
 }
@@ -624,6 +655,7 @@ export type citizenCreateWithoutFamily_relationship_family_relationship_related_
   updated_at?: Date | string | null
   person: Prisma.personCreateNestedOneWithoutCitizenInput
   user?: Prisma.UserCreateNestedOneWithoutCitizenInput
+  citizen_activation?: Prisma.citizen_activationCreateNestedOneWithoutCitizenInput
   enrolment?: Prisma.enrolmentCreateNestedManyWithoutCitizenInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
 }
@@ -635,6 +667,7 @@ export type citizenUncheckedCreateWithoutFamily_relationship_family_relationship
   national_unique_id: string
   created_at?: Date | string
   updated_at?: Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedCreateNestedOneWithoutCitizenInput
   enrolment?: Prisma.enrolmentUncheckedCreateNestedManyWithoutCitizenInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
 }
@@ -662,6 +695,7 @@ export type citizenUpdateWithoutFamily_relationship_family_relationship_citizen_
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   person?: Prisma.personUpdateOneRequiredWithoutCitizenNestedInput
   user?: Prisma.UserUpdateOneWithoutCitizenNestedInput
+  citizen_activation?: Prisma.citizen_activationUpdateOneWithoutCitizenNestedInput
   enrolment?: Prisma.enrolmentUpdateManyWithoutCitizenNestedInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_related_citizen_idTocitizenNestedInput
 }
@@ -673,6 +707,7 @@ export type citizenUncheckedUpdateWithoutFamily_relationship_family_relationship
   national_unique_id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedUpdateOneWithoutCitizenNestedInput
   enrolment?: Prisma.enrolmentUncheckedUpdateManyWithoutCitizenNestedInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUncheckedUpdateManyWithoutCitizen_family_relationship_related_citizen_idTocitizenNestedInput
 }
@@ -695,6 +730,7 @@ export type citizenUpdateWithoutFamily_relationship_family_relationship_related_
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   person?: Prisma.personUpdateOneRequiredWithoutCitizenNestedInput
   user?: Prisma.UserUpdateOneWithoutCitizenNestedInput
+  citizen_activation?: Prisma.citizen_activationUpdateOneWithoutCitizenNestedInput
   enrolment?: Prisma.enrolmentUpdateManyWithoutCitizenNestedInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_citizen_idTocitizenNestedInput
 }
@@ -706,6 +742,7 @@ export type citizenUncheckedUpdateWithoutFamily_relationship_family_relationship
   national_unique_id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedUpdateOneWithoutCitizenNestedInput
   enrolment?: Prisma.enrolmentUncheckedUpdateManyWithoutCitizenNestedInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUncheckedUpdateManyWithoutCitizen_family_relationship_citizen_idTocitizenNestedInput
 }
@@ -716,6 +753,7 @@ export type citizenCreateWithoutPersonInput = {
   created_at?: Date | string
   updated_at?: Date | string | null
   user?: Prisma.UserCreateNestedOneWithoutCitizenInput
+  citizen_activation?: Prisma.citizen_activationCreateNestedOneWithoutCitizenInput
   enrolment?: Prisma.enrolmentCreateNestedManyWithoutCitizenInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
@@ -727,6 +765,7 @@ export type citizenUncheckedCreateWithoutPersonInput = {
   national_unique_id: string
   created_at?: Date | string
   updated_at?: Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedCreateNestedOneWithoutCitizenInput
   enrolment?: Prisma.enrolmentUncheckedCreateNestedManyWithoutCitizenInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
@@ -754,6 +793,7 @@ export type citizenUpdateWithoutPersonInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneWithoutCitizenNestedInput
+  citizen_activation?: Prisma.citizen_activationUpdateOneWithoutCitizenNestedInput
   enrolment?: Prisma.enrolmentUpdateManyWithoutCitizenNestedInput
   family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_citizen_idTocitizenNestedInput
   family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_related_citizen_idTocitizenNestedInput
@@ -762,6 +802,71 @@ export type citizenUpdateWithoutPersonInput = {
 export type citizenUncheckedUpdateWithoutPersonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   user_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  national_unique_id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  citizen_activation?: Prisma.citizen_activationUncheckedUpdateOneWithoutCitizenNestedInput
+  enrolment?: Prisma.enrolmentUncheckedUpdateManyWithoutCitizenNestedInput
+  family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUncheckedUpdateManyWithoutCitizen_family_relationship_citizen_idTocitizenNestedInput
+  family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUncheckedUpdateManyWithoutCitizen_family_relationship_related_citizen_idTocitizenNestedInput
+}
+
+export type citizenCreateWithoutCitizen_activationInput = {
+  id?: string
+  national_unique_id: string
+  created_at?: Date | string
+  updated_at?: Date | string | null
+  person: Prisma.personCreateNestedOneWithoutCitizenInput
+  user?: Prisma.UserCreateNestedOneWithoutCitizenInput
+  enrolment?: Prisma.enrolmentCreateNestedManyWithoutCitizenInput
+  family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
+  family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
+}
+
+export type citizenUncheckedCreateWithoutCitizen_activationInput = {
+  id?: string
+  user_id?: string | null
+  person_id: string
+  national_unique_id: string
+  created_at?: Date | string
+  updated_at?: Date | string | null
+  enrolment?: Prisma.enrolmentUncheckedCreateNestedManyWithoutCitizenInput
+  family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_citizen_idTocitizenInput
+  family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUncheckedCreateNestedManyWithoutCitizen_family_relationship_related_citizen_idTocitizenInput
+}
+
+export type citizenCreateOrConnectWithoutCitizen_activationInput = {
+  where: Prisma.citizenWhereUniqueInput
+  create: Prisma.XOR<Prisma.citizenCreateWithoutCitizen_activationInput, Prisma.citizenUncheckedCreateWithoutCitizen_activationInput>
+}
+
+export type citizenUpsertWithoutCitizen_activationInput = {
+  update: Prisma.XOR<Prisma.citizenUpdateWithoutCitizen_activationInput, Prisma.citizenUncheckedUpdateWithoutCitizen_activationInput>
+  create: Prisma.XOR<Prisma.citizenCreateWithoutCitizen_activationInput, Prisma.citizenUncheckedCreateWithoutCitizen_activationInput>
+  where?: Prisma.citizenWhereInput
+}
+
+export type citizenUpdateToOneWithWhereWithoutCitizen_activationInput = {
+  where?: Prisma.citizenWhereInput
+  data: Prisma.XOR<Prisma.citizenUpdateWithoutCitizen_activationInput, Prisma.citizenUncheckedUpdateWithoutCitizen_activationInput>
+}
+
+export type citizenUpdateWithoutCitizen_activationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  national_unique_id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  person?: Prisma.personUpdateOneRequiredWithoutCitizenNestedInput
+  user?: Prisma.UserUpdateOneWithoutCitizenNestedInput
+  enrolment?: Prisma.enrolmentUpdateManyWithoutCitizenNestedInput
+  family_relationship_family_relationship_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_citizen_idTocitizenNestedInput
+  family_relationship_family_relationship_related_citizen_idTocitizen?: Prisma.family_relationshipUpdateManyWithoutCitizen_family_relationship_related_citizen_idTocitizenNestedInput
+}
+
+export type citizenUncheckedUpdateWithoutCitizen_activationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  user_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  person_id?: Prisma.StringFieldUpdateOperationsInput | string
   national_unique_id?: Prisma.StringFieldUpdateOperationsInput | string
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -828,6 +933,7 @@ export type citizenSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   updated_at?: boolean
   person?: boolean | Prisma.personDefaultArgs<ExtArgs>
   user?: boolean | Prisma.citizen$userArgs<ExtArgs>
+  citizen_activation?: boolean | Prisma.citizen$citizen_activationArgs<ExtArgs>
   enrolment?: boolean | Prisma.citizen$enrolmentArgs<ExtArgs>
   family_relationship_family_relationship_citizen_idTocitizen?: boolean | Prisma.citizen$family_relationship_family_relationship_citizen_idTocitizenArgs<ExtArgs>
   family_relationship_family_relationship_related_citizen_idTocitizen?: boolean | Prisma.citizen$family_relationship_family_relationship_related_citizen_idTocitizenArgs<ExtArgs>
@@ -869,6 +975,7 @@ export type citizenOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type citizenInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   person?: boolean | Prisma.personDefaultArgs<ExtArgs>
   user?: boolean | Prisma.citizen$userArgs<ExtArgs>
+  citizen_activation?: boolean | Prisma.citizen$citizen_activationArgs<ExtArgs>
   enrolment?: boolean | Prisma.citizen$enrolmentArgs<ExtArgs>
   family_relationship_family_relationship_citizen_idTocitizen?: boolean | Prisma.citizen$family_relationship_family_relationship_citizen_idTocitizenArgs<ExtArgs>
   family_relationship_family_relationship_related_citizen_idTocitizen?: boolean | Prisma.citizen$family_relationship_family_relationship_related_citizen_idTocitizenArgs<ExtArgs>
@@ -888,6 +995,7 @@ export type $citizenPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     person: Prisma.$personPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs> | null
+    citizen_activation: Prisma.$citizen_activationPayload<ExtArgs> | null
     enrolment: Prisma.$enrolmentPayload<ExtArgs>[]
     family_relationship_family_relationship_citizen_idTocitizen: Prisma.$family_relationshipPayload<ExtArgs>[]
     family_relationship_family_relationship_related_citizen_idTocitizen: Prisma.$family_relationshipPayload<ExtArgs>[]
@@ -1295,6 +1403,7 @@ export interface Prisma__citizenClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   person<T extends Prisma.personDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.personDefaultArgs<ExtArgs>>): Prisma.Prisma__personClient<runtime.Types.Result.GetResult<Prisma.$personPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.citizen$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.citizen$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  citizen_activation<T extends Prisma.citizen$citizen_activationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.citizen$citizen_activationArgs<ExtArgs>>): Prisma.Prisma__citizen_activationClient<runtime.Types.Result.GetResult<Prisma.$citizen_activationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   enrolment<T extends Prisma.citizen$enrolmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.citizen$enrolmentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$enrolmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   family_relationship_family_relationship_citizen_idTocitizen<T extends Prisma.citizen$family_relationship_family_relationship_citizen_idTocitizenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.citizen$family_relationship_family_relationship_citizen_idTocitizenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$family_relationshipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   family_relationship_family_relationship_related_citizen_idTocitizen<T extends Prisma.citizen$family_relationship_family_relationship_related_citizen_idTocitizenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.citizen$family_relationship_family_relationship_related_citizen_idTocitizenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$family_relationshipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1750,6 +1859,25 @@ export type citizen$userArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * citizen.citizen_activation
+ */
+export type citizen$citizen_activationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the citizen_activation
+   */
+  select?: Prisma.citizen_activationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the citizen_activation
+   */
+  omit?: Prisma.citizen_activationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.citizen_activationInclude<ExtArgs> | null
+  where?: Prisma.citizen_activationWhereInput
 }
 
 /**

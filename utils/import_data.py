@@ -10,7 +10,7 @@ from psycopg2 import sql
 DB_CONFIG = {
     "host": "localhost",
     "port": 5432,
-    "database": "enrolment",
+    "database": "etat_civil",
     "user": "admin",
     "password": "123456",
 }
