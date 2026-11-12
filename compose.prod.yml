@@ -33,6 +33,7 @@ services:
         condition: service_healthy
     networks:
       - internal
+      - ollama_network
 
 volumes:
   postgres_data:
@@ -40,4 +41,8 @@ volumes:
 networks:
   internal:
     driver: bridge
+
+  ollama_network:
+    external: true
+    name: ollama_shared
 
