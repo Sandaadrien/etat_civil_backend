@@ -13,6 +13,22 @@ async function bootstrap() {
     bodyParser: false,
   });
 
+  app.enableCors({
+    origin: [
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'http://192.168.11.205:5173',
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Cookie',
+      'X-Requested-With',
+    ],
+  });
+
   // 1. Récupérer l'instance Express avec un typage explicite
   const expressApp = app.getHttpAdapter().getInstance() as Express;
   // 2. Enregistrer le handler Better Auth
@@ -39,10 +55,10 @@ async function bootstrap() {
   );
 
   // 5. CORS
-  app.enableCors({
-    origin: ['http://localhost:5173', 'http://192.168.11.243:5173'],
-    credentials: true,
-  });
+  // app.enableCors({
+  //   origin: ['http://localhost:5173', 'http://192.168.11.205:5173'],
+  //   credentials: true,
+  // });
 
   // 6. Démarrage
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');

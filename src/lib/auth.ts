@@ -14,8 +14,9 @@ import { prisma } from './prisma';
 export const auth = betterAuth({
   appName: 'Citizen Application',
 
-  baseURL: process.env.BETTER_AUTH_URL,
-
+  // baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: 'http://192.168.11.219:3000',
+  basePath: '/api/auth',
   secret: process.env.BETTER_AUTH_SECRET,
 
   database: prismaAdapter(prisma, {
@@ -26,8 +27,11 @@ export const auth = betterAuth({
     enabled: true,
   },
 
-  trustedOrigins: ['http://localhost:5173', 'http://192.168.11.243:5173'],
-
+  trustedOrigins: [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://192.168.11.205:5173',
+  ],
   disabledPaths: ['/token'],
 
   advanced: {
