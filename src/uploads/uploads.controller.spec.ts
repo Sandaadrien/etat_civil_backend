@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { UploadsController } from './uploads.controller';
@@ -22,13 +23,21 @@ describe('UploadsController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('uploadDocument délègue le fichier au service', async () => {
-    const file = { originalname: 'a.png' } as Express.Multer.File;
+  it('uploadDocuments délègue les fichiers au service', async () => {
+    const files = [{ originalname: 'a.png' }] as Express.Multer.File[];
     service.saveDocument.mockResolvedValue({ storage_key: 'k' });
 
-    await expect(controller.uploadDocument(file)).resolves.toEqual({
-      storage_key: 'k',
+    await expect(controller.uploadDocuments(files)).resolves.toEqual({
+      message: 'Documents enregistrés avec succès.',
+      total: 1,
+      documents: [{ storage_key: 'k' }],
     });
-    expect(service.saveDocument).toHaveBeenCalledWith(file);
+    expect(service.saveDocument).toHaveBeenCalledWith(files[0]);
+  });
+
+  it('uploadDocuments rejette si aucun fichier n’est fourni', async () => {
+    await expect(controller.uploadDocuments([])).rejects.toThrow(
+      'Veuillez envoyer au moins un fichier.',
+    );
   });
 });
