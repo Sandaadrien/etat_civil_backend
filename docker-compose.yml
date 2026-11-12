@@ -13,13 +13,11 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV:?Set NODE_ENV in .env}
       - PORT=${APP_PORT:?Set APP_PORT in .env}
-      # Use the Compose service hostname, not localhost, inside the container.
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-db:5432/${POSTGRES_DB}?schema=public
       - BETTER_AUTH_URL=${BETTER_AUTH_URL:?Set BETTER_AUTH_URL in .env}
     command:
       - sh
       - -c
-      - ./node_modules/.bin/prisma --config prisma7.config.ts migrate deploy && node dist/main.js
+      - ./node_modules/.bin/prisma --config prisma7.config.ts migrate deploy && node dist/src/main.js
     depends_on:
       postgres-db:
         condition: service_healthy
