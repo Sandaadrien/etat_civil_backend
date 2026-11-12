@@ -1,0 +1,62 @@
+name: Code quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      issue_on_warning:
+        description: "Create issues for warnings too?"
+        type: choice
+        options: [config, "yes", "no"]
+        default: config
+
+# A new push cancels the analysis still running for the same branch.
+concurrency:
+  group: code-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  quality:
+    name: Quality (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        # Names of the targets defined in quality/config.yml
+        target: [backend]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: quality/requirements.txt
+
+      - name: Install Lizard and Semgrep
+        run: pip install -r quality/requirements.txt
+
+      # Issues are only synchronised outside pull requests (push on main, manual run).
+      - name: Analyze ${{ matrix.target }}
+        run: python quality/run.py --target ${{ matrix.target }} ${{ github.event_name != 'pull_request' && '--sync-issues' || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          QUALITY_ISSUE_ON_WARNING: ${{ (inputs.issue_on_warning == 'yes' && 'true') || (inputs.issue_on_warning == 'no' && 'false') || '' }}
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-${{ matrix.target }}
+          path: quality-results/
+          if-no-files-found: ignore

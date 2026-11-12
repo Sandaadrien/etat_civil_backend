@@ -1,0 +1,99 @@
+# Style and best-practice rules for JavaScript / TypeScript code.
+# Severity mapping used by the dashboard:
+#   ERROR   -> critical  (must be fixed as soon as possible)
+#   WARNING -> warning   (recommended, not mandatory)
+#   INFO    -> info      (suggestion)
+# Edit this file freely: change a severity, a message, or add your own rules.
+rules:
+  - id: no-console-log
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: Avoid console.log in committed code. Use a logger (for example the NestJS Logger) so that output can be filtered and routed.
+    pattern-either:
+      - pattern: console.log(...)
+      - pattern: console.debug(...)
+    metadata:
+      category: best-practice
+
+  - id: no-debugger
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: Remove the debugger statement before committing.
+    pattern: debugger;
+    metadata:
+      category: best-practice
+
+  - id: no-var
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: Use const or let instead of var. Variables declared with var are function-scoped and easy to misuse.
+    # A regex is used on purpose: the Semgrep pattern "var $X = ..." also matches const and let.
+    pattern-regex: (?m)^[ \t]*var\s+[\w$]+
+    metadata:
+      category: style
+
+  - id: no-explicit-any
+    languages: [typescript]
+    severity: WARNING
+    message: Avoid the any type. Use a precise type, an interface, or unknown so that the compiler can protect you.
+    pattern-regex: (:\s*any\b|(?<![\w$.])as\s+any\b|<any>)
+    metadata:
+      category: style
+
+  - id: strict-equality
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: Use === or !== instead of == or !=. Loose comparison performs implicit type conversion.
+    patterns:
+      - pattern-either:
+          - pattern: $A == $B
+          - pattern: $A != $B
+      - pattern-not: $A == null
+      - pattern-not: $A != null
+      - pattern-not: $A == undefined
+      - pattern-not: $A != undefined
+    metadata:
+      category: style
+
+  - id: no-empty-catch
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: Do not swallow errors with an empty catch block. Handle the error, log it, or rethrow it.
+    pattern: |
+      try {
+        ...
+      } catch ($E) {
+      }
+    metadata:
+      category: best-practice
+
+  - id: no-nested-ternary
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: Avoid nested ternary expressions. Use if statements or extract the logic into a function to keep it readable.
+    pattern-either:
+      - pattern: '$A ? ($B ? $C : $D) : $E'
+      - pattern: '$A ? $B : ($C ? $D : $E)'
+    metadata:
+      category: style
+
+  - id: no-await-in-loop
+    languages: [javascript, typescript]
+    severity: INFO
+    message: Awaiting inside a loop runs the operations one after the other. Consider Promise.all when the iterations are independent.
+    patterns:
+      - pattern-inside: |
+          for (...) {
+            ...
+          }
+      - pattern: await $X
+    metadata:
+      category: performance
+
+  - id: todo-comment
+    languages: [javascript, typescript]
+    severity: INFO
+    message: Unresolved TODO, FIXME or HACK comment. Track it in the issue tracker or resolve it.
+    pattern-regex: //\s*(TODO|FIXME|HACK)\b.*
+    metadata:
+      category: maintainability
