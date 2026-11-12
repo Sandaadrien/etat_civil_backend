@@ -1,3 +1,7 @@
+minimumReleaseAge: 1440
+
+minimumReleaseAgeExclude:
+  - '@better-auth/oauth-provider'
 allowBuilds:
   '@parcel/watcher': true
   '@prisma/engines': true
