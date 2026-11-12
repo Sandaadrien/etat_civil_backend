@@ -22,8 +22,10 @@ import { UpdateAgentDto } from './dto/update-agent.dto';
 import { UpdateAgentStatusDto } from './dto/update-agent-status.dto';
 
 import { GetMeResponse } from '../dashboard/dto/auth-response.dto';
+import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 
 @Controller('agents')
+@AllowAnonymous()
 export class AgentsController {
   constructor(private readonly agentsService: AgentsService) {}
 

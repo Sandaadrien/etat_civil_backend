@@ -7,6 +7,10 @@ import { prisma } from '../lib/prisma';
 import { AgentsController } from './agents.controller';
 import { AgentsService } from './agents.service';
 
+jest.mock('@thallesp/nestjs-better-auth', () => ({
+  AllowAnonymous: () => () => {},
+}));
+
 jest.mock('better-auth/node', () => ({
   fromNodeHeaders: jest.fn((headers) => headers),
 }));
