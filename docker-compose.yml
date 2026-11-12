@@ -1,0 +1,50 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:?Set NODE_IMAGE in .env}
+        APP_PORT: ${APP_PORT:?Set APP_PORT in .env}
+    container_name: ${API_CONTAINER_NAME:?Set API_CONTAINER_NAME in .env}
+    env_file: .env
+    ports:
+      - "${API_PORT:?Set API_PORT in .env}:${APP_PORT:?Set APP_PORT in .env}"
+    environment:
+      - NODE_ENV=${NODE_ENV:?Set NODE_ENV in .env}
+      - PORT=${APP_PORT:?Set APP_PORT in .env}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL:?Set BETTER_AUTH_URL in .env}
+    command:
+      - sh
+      - -c
+      - ./node_modules/.bin/prisma --config prisma7.config.ts migrate deploy && node dist/src/main.js
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    volumes:
+      - private_uploads:/app/private-uploads
+    restart: unless-stopped
+
+  postgres-db:
+    image: ${POSTGRES_IMAGE:?Set POSTGRES_IMAGE in .env}
+    container_name: ${POSTGRES_CONTAINER_NAME:?Set POSTGRES_CONTAINER_NAME in .env}
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:?Set POSTGRES_USER in .env}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      - POSTGRES_DB=${POSTGRES_DB:?Set POSTGRES_DB in .env}
+    ports:
+      - "${POSTGRES_PORT:?Set POSTGRES_PORT in .env}:5432"
+    volumes:
+      - postgres_data_v18:/var/lib/postgresql
+      - ./docker/postgres/restore.sh:/docker-entrypoint-initdb.d/10-restore.sh:ro
+      - ${DATABASE_DUMP_PATH:?Set DATABASE_DUMP_PATH in .env}:/docker-entrypoint-initdb.d/etat_civil.dump:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data_v18:
+  private_uploads:

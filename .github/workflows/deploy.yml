@@ -1,0 +1,95 @@
+
+name: Deploy Etat Civil
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: etat-civil-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -t etat-civil-backend:${GITHUB_SHA} .
+
+      - name: Configure SSH
+        env:
+          HOST: ${{ secrets.HOST }}
+          USER1: ${{ secrets.USER1 }}
+          HOST2: ${{ secrets.HOST2 }}
+          USER2: ${{ secrets.USER2 }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          cat > ~/.ssh/config <<EOF
+          Host vps
+            HostName ${HOST}
+            User ${USER1}
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking accept-new
+
+          Host school
+            HostName ${HOST2}
+            User ${USER2}
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            ProxyJump vps
+            StrictHostKeyChecking accept-new
+          EOF
+
+          chmod 600 ~/.ssh/config
+
+      - name: Test SSH connection
+        run: |
+          ssh -o BatchMode=yes school "whoami"
+
+      - name: Prepare deployment directory
+        run: |
+          ssh school \
+            "mkdir -p /home/cloud/apps/etat-civil"
+
+      - name: Transfer deployment files
+        run: |
+          scp compose.prod.yml \
+            school:/home/cloud/apps/etat-civil/
+
+          scp scripts/deploy-prod.sh \
+            school:/home/cloud/apps/etat-civil/
+
+      - name: Transfer Docker image
+        run: |
+          docker save etat-civil-backend:${GITHUB_SHA} \
+            | ssh school "docker load"
+
+      - name: Run deployment
+        run: |
+          ssh school \
+            "bash /home/cloud/apps/etat-civil/deploy-prod.sh ${GITHUB_SHA}"
+
+      - name: Deployment completed
+        run: |
+          echo "Etat Civil deployed successfully"
+          echo "Commit: ${GITHUB_SHA}"

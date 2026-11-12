@@ -1,0 +1,48 @@
+
+name: etat-civil
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal
+
+  backend:
+    image: etat-civil-backend:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    ports:
+      - "100.101.128.43:3001:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+      - ollama_network
+
+volumes:
+  postgres_data:
+
+networks:
+  internal:
+    driver: bridge
+
+  ollama_network:
+    external: true
+    name: ollama_shared
+

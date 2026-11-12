@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+.env_example
+node_modules
+dist
+coverage
+private-uploads
+generated
+actes-naissance/__pycache__
