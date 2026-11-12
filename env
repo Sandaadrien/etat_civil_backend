@@ -1,0 +1,27 @@
+BETTER_AUTH_SECRET="TYBhXt+pH1hInEmOp4zA7xuH2wXIps5yWkkC2fnDNrf0="
+BETTER_AUTH_URL="http://localhost:3000"
+
+
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+
+SMTP_USER=sandaniainaadrien@gmail.com
+SMTP_PASSWORD=pkoc huuc faew wfky
+SMTP_FROM="Enrolment Application <no-reply@example.com>"
+OTP_HASH_SECRET=019167b64d96cd19325988e04fedd3925181b6f11918a4fd
+
+# FRONTEND_URL=http://frontend.com
+DATABASE_URL=postgresql://etat_civil:4d4a10ddbc176fa1eb307c31807246885db0ecd5bb61de7d@postgres-db:5432/etat_civil?schema=public
+NODE_IMAGE=node:22-alpine
+POSTGRES_IMAGE=postgres:18-alpine
+NODE_ENV=production
+APP_PORT=3000
+API_PORT=3000
+POSTGRES_PORT=5432
+POSTGRES_USER=etat_civil
+POSTGRES_PASSWORD=4d4a10ddbc176fa1eb307c31807246885db0ecd5bb61de7d
+POSTGRES_DB=etat_civil
+DATABASE_DUMP_PATH=./etat_civil.sql
+API_CONTAINER_NAME=etat-civil-api
+POSTGRES_CONTAINER_NAME=etat-civil-postgres
