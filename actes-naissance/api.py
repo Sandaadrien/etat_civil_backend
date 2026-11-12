@@ -107,7 +107,7 @@ def extract(file: UploadFile = File(...)):
     # =====================================
     # MODE MOCK (DEVELOPPEMENT)
     # =====================================
-    MOCK_MODE=True
+    MOCK_MODE = os.getenv("OCR_MOCK_MODE", "false").lower() == "true"
     if MOCK_MODE:
             return MOCK_ACTE.model_dump(mode="json")
 
