@@ -1,0 +1,15 @@
+allowBuilds:
+  '@parcel/watcher': true
+  '@prisma/engines': true
+  '@scarf/scarf': false
+  esbuild: true
+  prisma: true
+  unrs-resolver: true
+
+# pnpm 10 compatibility; pnpm 11+ uses allowBuilds above.
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@prisma/engines'
+  - esbuild
+  - prisma
+  - unrs-resolver

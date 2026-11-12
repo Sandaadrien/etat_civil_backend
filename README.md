@@ -14,13 +14,13 @@ cd actes-naissance/
 python -m pip install -r requirements.txt
 
 commande pour lancer le LLM en local
-$ uvicorn api:app --host 127.0.0.1 --port 8000 --reload
+$ uvicorn api:app --host 0.0.0.0 --port 8000 --reload
 
 - GET /health permet de vérifier que le serveur répond.
 - POST /extract reçoit un fichier sous le nom de champ file.
 
 ouvrir swagger
-http://127.0.0.1:8000/docs
+http://0.0.0.0:8000/docs
 
 ## Architecture
 
