@@ -14,7 +14,7 @@ import type * as Prisma from "../internal/prismaNamespace.js"
 
 /**
  * Model document_ocr_result
- * This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+ * 
  */
 export type document_ocr_resultModel = runtime.Types.Result.DefaultSelection<Prisma.$document_ocr_resultPayload>
 

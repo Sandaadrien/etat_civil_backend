@@ -1,7 +1,8 @@
 import { betterAuth } from 'better-auth';
-import type { BetterAuthOptions } from 'better-auth';
-import { jwt, openAPI, bearer } from 'better-auth/plugins';
+
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+
+import { bearer, jwt, openAPI } from 'better-auth/plugins';
 
 import {
   oauthProvider,
@@ -10,7 +11,13 @@ import {
 
 import { prisma } from './prisma';
 
-const authOptions = {
+export const auth = betterAuth({
+  appName: 'Citizen Application',
+
+  baseURL: process.env.BETTER_AUTH_URL,
+
+  secret: process.env.BETTER_AUTH_SECRET,
+
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
@@ -21,44 +28,45 @@ const authOptions = {
 
   trustedOrigins: ['http://localhost:5173', 'http://192.168.11.243:5173'],
 
+  disabledPaths: ['/token'],
+
   advanced: {
     defaultCookieAttributes: {
-      sameSite: 'none',
-      secure: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
     },
   },
 
-  disabledPaths: ['/token'],
-
   plugins: [
     openAPI(),
+
     bearer(),
 
     jwt({
       disableSettingJwtHeader: true,
     }),
 
+    // Notre serveur OAuth / OpenID Connect
     oauthProvider({
       loginPage: '/sign-in',
       consentPage: '/consent',
-
-      scopes: ['openid', 'profile', 'email', 'offline_access'],
+      scopes: ['openid', 'profile', 'email', 'offline_access', 'citizen:read'],
 
       accessTokenExpiresIn: 900,
       idTokenExpiresIn: 3600,
       refreshTokenExpiresIn: 604800,
       codeExpiresIn: 300,
 
-      // À adapter à tes ressources API.
-      resources: ['https://localhost:3000'],
+      resources: [
+        {
+          identifier: 'http://localhost:3000',
+          allowedScopes: ['citizen:read'],
+          accessTokenTtl: 900,
+        },
+      ],
     }),
 
-    oauthDeviceAuthorization({
-      verificationUri: '/device',
-      expiresIn: '10m',
-      interval: '5s',
-    }),
+    // Authentification avec code sur un autre appareil
+    oauthDeviceAuthorization(),
   ],
-} satisfies BetterAuthOptions;
-
-export const auth = betterAuth(authOptions);
+});

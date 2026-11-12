@@ -15,6 +15,7 @@ import { DashboardController } from './dashboard/dashboard.controller';
 import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ActivationModule } from './activation/activation.module';
+import { OauthModule } from './oauth/oauth.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ActivationModule } from './activation/activation.module';
     UploadsModule,
     DashboardModule,
     ActivationModule,
+    OauthModule,
   ],
   controllers: [AppController, DashboardController],
   providers: [AppService, DocumentTypeService, DashboardService],

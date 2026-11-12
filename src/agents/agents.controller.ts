@@ -31,7 +31,6 @@ export class AgentsController {
     const session = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
-
     if (!session?.user) {
       throw new UnauthorizedException('Vous devez être connecté.');
     }
