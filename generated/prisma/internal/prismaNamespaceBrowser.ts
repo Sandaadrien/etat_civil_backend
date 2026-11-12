@@ -74,7 +74,8 @@ export const ModelName = {
   family_relationship: 'family_relationship',
   fokontany: 'fokontany',
   person: 'person',
-  region: 'region'
+  region: 'region',
+  citizen_activation: 'citizen_activation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,6 +405,21 @@ export const RegionScalarFieldEnum = {
 } as const
 
 export type RegionScalarFieldEnum = (typeof RegionScalarFieldEnum)[keyof typeof RegionScalarFieldEnum]
+
+
+export const Citizen_activationScalarFieldEnum = {
+  id: 'id',
+  citizen_id: 'citizen_id',
+  email: 'email',
+  otp_hash: 'otp_hash',
+  expires_at: 'expires_at',
+  attempts: 'attempts',
+  verified_at: 'verified_at',
+  created_at: 'created_at',
+  consumed_at: 'consumed_at'
+} as const
+
+export type Citizen_activationScalarFieldEnum = (typeof Citizen_activationScalarFieldEnum)[keyof typeof Citizen_activationScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -1,0 +1,23 @@
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { prisma } from './prisma';
+import { openAPI, bearer } from 'better-auth/plugins';
+
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, {
+    provider: 'postgresql',
+  }),
+
+  emailAndPassword: {
+    enabled: true,
+  },
+  trustedOrigins: ['http://localhost:5173', 'http://192.168.11.243:5173'],
+
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: 'none',
+      secure: true,
+    },
+  },
+  plugins: [openAPI(), bearer()],
+});

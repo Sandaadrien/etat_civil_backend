@@ -21,6 +21,8 @@ import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
 import { UpdateAgentStatusDto } from './dto/update-agent-status.dto';
 
+import { GetMeResponse } from '../dashboard/dto/auth-response.dto';
+
 @Controller('agents')
 export class AgentsController {
   constructor(private readonly agentsService: AgentsService) {}
@@ -69,7 +71,13 @@ export class AgentsController {
 
     return this.agentsService.findAll(Number(page), Number(limit), search);
   }
-
+  @Get('me')
+  async getMe(@Req() req: Request): Promise<GetMeResponse> {
+    const agentService = this.agentsService as {
+      getMe(request: Request): Promise<GetMeResponse>;
+    };
+    return agentService.getMe(req);
+  }
   @Get(':id')
   async findOne(@Req() req: Request, @Param('id', ParseUUIDPipe) id: string) {
     await this.requireAdmin(req);

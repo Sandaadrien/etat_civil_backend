@@ -11,6 +11,10 @@ import { ReferenceModule } from './reference/reference.module';
 import { DocumentTypeService } from './document-type/document-type.service';
 import { DocumentTypeModule } from './document-type/document-type.module';
 import { UploadsModule } from './uploads/uploads.module';
+import { DashboardController } from './dashboard/dashboard.controller';
+import { DashboardService } from './dashboard/dashboard.service';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { ActivationModule } from './activation/activation.module';
 
 @Module({
   imports: [
@@ -26,8 +30,10 @@ import { UploadsModule } from './uploads/uploads.module';
     ReferenceModule,
     DocumentTypeModule,
     UploadsModule,
+    DashboardModule,
+    ActivationModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, DocumentTypeService],
+  controllers: [AppController, DashboardController],
+  providers: [AppService, DocumentTypeService, DashboardService],
 })
 export class AppModule {}

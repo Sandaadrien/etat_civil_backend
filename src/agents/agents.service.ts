@@ -4,6 +4,8 @@ import {
   InternalServerErrorException,
   NotFoundException,
   BadRequestException,
+  UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 
 import { Prisma } from '../../generated/prisma/client';
@@ -11,6 +13,9 @@ import { prisma } from '../lib/prisma';
 import { auth } from '../lib/auth';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
+
+import { Request } from 'express';
+import { GetMeResponse } from 'src/dashboard/dto/auth-response.dto';
 
 @Injectable()
 export class AgentsService {
@@ -386,5 +391,77 @@ export class AgentsService {
         updated_at: true,
       },
     });
+  }
+  async getMe(req: Request): Promise<GetMeResponse> {
+    // 1. Récupérer la session Better Auth
+    const headers = new Headers();
+
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (typeof value === 'string') {
+        headers.set(key, value);
+      } else if (Array.isArray(value)) {
+        headers.set(key, value.join(', '));
+      }
+    }
+
+    const session = await auth.api.getSession({ headers });
+
+    if (!session) {
+      throw new UnauthorizedException('Session expirée ou invalide.');
+    }
+
+    // 2. Récupérer le profil utilisateur
+    const user = await prisma.user.findUnique({
+      where: {
+        id: session.user.id,
+      },
+      include: {
+        agent: {
+          include: {
+            person: true,
+            application_role: true,
+            centre: true,
+          },
+        },
+        citizen: true,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Utilisateur introuvable.');
+    }
+
+    if (user.agent && !user.agent.is_active) {
+      throw new ForbiddenException('Votre compte agent est désactivé.');
+    }
+    const data: GetMeResponse = {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        image: user.image,
+      },
+
+      agent: user.agent
+        ? {
+            id: user.agent.id,
+            is_active: user.agent.is_active,
+            role: user.agent.application_role,
+            centre: user.agent.centre,
+            person: user.agent.person,
+          }
+        : null,
+
+      citizen: user.citizen
+        ? {
+            id: user.citizen.id,
+            national_unique_id: user.citizen.national_unique_id,
+          }
+        : null,
+    };
+
+    // 3. Retourner le profil
+    return data;
   }
 }

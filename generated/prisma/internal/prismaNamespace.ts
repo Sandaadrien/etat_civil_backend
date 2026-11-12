@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.10.0
- * Query Engine version: 0edf323efd1d98336f3f0a68684b56f689b900d3
+ * Prisma Client JS version: 7.10.1
+ * Query Engine version: d1b3f377ca835d73fd50954a5e22128b9ebdd6b8
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.10.0",
-  engine: "0edf323efd1d98336f3f0a68684b56f689b900d3"
+  client: "7.10.1",
+  engine: "d1b3f377ca835d73fd50954a5e22128b9ebdd6b8"
 }
 
 /**
@@ -420,7 +420,8 @@ export const ModelName = {
   family_relationship: 'family_relationship',
   fokontany: 'fokontany',
   person: 'person',
-  region: 'region'
+  region: 'region',
+  citizen_activation: 'citizen_activation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -436,7 +437,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "address" | "agent" | "application_role" | "centre" | "citizen" | "commune" | "contact_method" | "country" | "district" | "document" | "document_file" | "document_mrz" | "document_ocr_result" | "document_type" | "enrolment" | "face_biometric" | "family_relationship" | "fokontany" | "person" | "region"
+    modelProps: "user" | "session" | "account" | "verification" | "address" | "agent" | "application_role" | "centre" | "citizen" | "commune" | "contact_method" | "country" | "district" | "document" | "document_file" | "document_mrz" | "document_ocr_result" | "document_type" | "enrolment" | "face_biometric" | "family_relationship" | "fokontany" | "person" | "region" | "citizen_activation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2216,6 +2217,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    citizen_activation: {
+      payload: Prisma.$citizen_activationPayload<ExtArgs>
+      fields: Prisma.citizen_activationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.citizen_activationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$citizen_activationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.citizen_activationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$citizen_activationPayload>
+        }
+        findFirst: {
+          args: Prisma.citizen_activationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$citizen_activationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.citizen_activationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$citizen_activationPayload>
+        }
+        findMany: {
+          args: Prisma.citizen_activationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$citizen_activationPayload>[]
+        }
+        create: {
+          args: Prisma.citizen_activationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$citizen_activationPayload>
+        }
+        createMany: {
+          args: Prisma.citizen_activationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.citizen_activationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$citizen_activationPayload>[]
+        }
+        delete: {
+          args: Prisma.citizen_activationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$citizen_activationPayload>
+        }
+        update: {
+          args: Prisma.citizen_activationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$citizen_activationPayload>
+        }
+        deleteMany: {
+          args: Prisma.citizen_activationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.citizen_activationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.citizen_activationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$citizen_activationPayload>[]
+        }
+        upsert: {
+          args: Prisma.citizen_activationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$citizen_activationPayload>
+        }
+        aggregate: {
+          args: Prisma.Citizen_activationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCitizen_activation>
+        }
+        groupBy: {
+          args: Prisma.citizen_activationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Citizen_activationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.citizen_activationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Citizen_activationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2566,6 +2641,21 @@ export const RegionScalarFieldEnum = {
 } as const
 
 export type RegionScalarFieldEnum = (typeof RegionScalarFieldEnum)[keyof typeof RegionScalarFieldEnum]
+
+
+export const Citizen_activationScalarFieldEnum = {
+  id: 'id',
+  citizen_id: 'citizen_id',
+  email: 'email',
+  otp_hash: 'otp_hash',
+  expires_at: 'expires_at',
+  attempts: 'attempts',
+  verified_at: 'verified_at',
+  created_at: 'created_at',
+  consumed_at: 'consumed_at'
+} as const
+
+export type Citizen_activationScalarFieldEnum = (typeof Citizen_activationScalarFieldEnum)[keyof typeof Citizen_activationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2975,6 +3065,7 @@ export type GlobalOmitConfig = {
   fokontany?: Prisma.fokontanyOmit
   person?: Prisma.personOmit
   region?: Prisma.regionOmit
+  citizen_activation?: Prisma.citizen_activationOmit
 }
 
 /* Types for Logging */
