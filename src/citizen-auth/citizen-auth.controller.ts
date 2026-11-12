@@ -4,8 +4,10 @@ import type { Request } from 'express';
 
 import { CitizenAuthService } from './citizen-auth.service';
 import { CitizenLoginDto } from './dto/citizen-login.dto';
+import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 
 @Controller('citizen/auth')
+@AllowAnonymous()
 export class CitizenAuthController {
   constructor(private readonly citizenAuthService: CitizenAuthService) {}
 
