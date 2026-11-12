@@ -8,14 +8,19 @@ import {
   oauthProvider,
   oauthDeviceAuthorization,
 } from '@better-auth/oauth-provider';
-
 import { prisma } from './prisma';
 
+const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL;
+const OAUTH_RESOURCE_URL = process.env.OAUTH_RESOURCE_URL;
+
+if (!BETTER_AUTH_URL || !OAUTH_RESOURCE_URL) {
+  throw new Error('BETTER_AUTH_URL et OAUTH_RESOURCE_URL sont obligatoires');
+}
 export const auth = betterAuth({
   appName: 'Citizen Application',
 
   // baseURL: process.env.BETTER_AUTH_URL,
-  baseURL: 'http://192.168.11.219:3000',
+  baseURL: BETTER_AUTH_URL,
   basePath: '/api/auth',
   secret: process.env.BETTER_AUTH_SECRET,
 
@@ -27,11 +32,13 @@ export const auth = betterAuth({
     enabled: true,
   },
 
-  trustedOrigins: [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://192.168.11.205:5173',
-  ],
+  // trustedOrigins: [
+  //   'http://localhost:5173',
+  //   'http://127.0.0.1:5173',
+  //   'http://192.168.11.205:5173',
+  //   'http://localhost:3000',
+  // ],
+
   disabledPaths: ['/token'],
 
   advanced: {
@@ -39,6 +46,7 @@ export const auth = betterAuth({
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
     },
+    disableOriginCheck: true,
   },
 
   plugins: [
@@ -63,7 +71,8 @@ export const auth = betterAuth({
 
       resources: [
         {
-          identifier: 'http://localhost:3000',
+          // identifier: 'http://localhost:3000',
+          identifier: OAUTH_RESOURCE_URL,
           allowedScopes: ['citizen:read'],
           accessTokenTtl: 900,
         },

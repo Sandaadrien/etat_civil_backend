@@ -16,6 +16,8 @@ import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ActivationModule } from './activation/activation.module';
 import { OauthModule } from './oauth/oauth.module';
+import { CitizenAuthController } from './citizen-auth/citizen-auth.controller';
+import { CitizenAuthModule } from './citizen-auth/citizen-auth.module';
 
 @Module({
   imports: [
@@ -34,8 +36,9 @@ import { OauthModule } from './oauth/oauth.module';
     DashboardModule,
     ActivationModule,
     OauthModule,
+    CitizenAuthModule,
   ],
-  controllers: [AppController, DashboardController],
+  controllers: [AppController, DashboardController, CitizenAuthController],
   providers: [AppService, DocumentTypeService, DashboardService],
 })
 export class AppModule {}
