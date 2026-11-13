@@ -1,4 +1,3 @@
-
 import {
   BadGatewayException,
   BadRequestException,
@@ -38,7 +37,7 @@ const ALLOWED_MIME_TYPES = [
 @AllowAnonymous()
 @Controller('ocr')
 @UseGuards(OcrAuthGuard)
-export class OcrController  {
+export class OcrController {
   constructor(private readonly config: ConfigService) {}
 
   @Post('extract')
@@ -93,9 +92,7 @@ export class OcrController  {
 
     // 3. Vérifier le fichier.
     if (!file) {
-      throw new BadRequestException(
-        'Veuillez sélectionner un document.',
-      );
+      throw new BadRequestException('Veuillez sélectionner un document.');
     }
 
     if (file.size > MAX_OCR_FILE_SIZE) {
@@ -105,18 +102,14 @@ export class OcrController  {
     }
 
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-      throw new BadRequestException(
-        'Format de fichier non autorisé.',
-      );
+      throw new BadRequestException('Format de fichier non autorisé.');
     }
 
     // 4. Lire l'adresse du service OCR interne.
     const ocrUrl = this.config.get<string>('OCR_API_URL');
 
     if (!ocrUrl) {
-      throw new BadGatewayException(
-        'Le service OCR n’est pas configuré.',
-      );
+      throw new BadGatewayException('Le service OCR n’est pas configuré.');
     }
 
     // 5. Préparer le fichier pour FastAPI.
@@ -134,14 +127,11 @@ export class OcrController  {
     let response: Response;
 
     try {
-      response = await fetch(
-        `${ocrUrl.replace(/\/$/, '')}/extract`,
-        {
-          method: 'POST',
-          body: formData,
-          signal: AbortSignal.timeout(180_000),
-        },
-      );
+      response = await fetch(`${ocrUrl.replace(/\/$/, '')}/extract`, {
+        method: 'POST',
+        body: formData,
+        signal: AbortSignal.timeout(180_000),
+      });
     } catch {
       throw new BadGatewayException(
         'Le service OCR est indisponible ou le délai de traitement a été dépassé.',
@@ -166,11 +156,8 @@ export class OcrController  {
       try {
         const errorBody: unknown = JSON.parse(result);
 
-        if (
-          typeof errorBody === 'object' &&
-          errorBody !== null
-        ) {
-          const errorDetail = Reflect.get(errorBody, 'detail');
+        if (typeof errorBody === 'object' && errorBody !== null) {
+          const errorDetail = (errorBody as Record<string, unknown>)['detail'];
 
           if (typeof errorDetail === 'string') {
             detail = errorDetail;
