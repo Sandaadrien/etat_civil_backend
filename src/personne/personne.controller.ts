@@ -1,6 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
+import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 
 @Controller('personne')
+@AllowAnonymous()
 export class PersonneController {
   @Get('fictive')
   getPersonneFictive() {
