@@ -5,8 +5,10 @@ import { ActivationService } from './activation.service';
 import { RequestActivationDto } from './dto/request-activation.dto';
 import { VerifyActivationDto } from './dto/verify-activation.dto';
 import { CompleteActivationDto } from './dto/complete-activation.dto';
+import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 
 @Controller('activation')
+@AllowAnonymous()
 export class ActivationController {
   constructor(private readonly activationService: ActivationService) {}
 
