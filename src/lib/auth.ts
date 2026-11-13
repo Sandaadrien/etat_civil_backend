@@ -60,7 +60,7 @@ export const auth = betterAuth({
 
     // Notre serveur OAuth / OpenID Connect
     oauthProvider({
-      loginPage: '/sign-in',
+      loginPage: '/sso-login',
       consentPage: '/consent',
       scopes: ['openid', 'profile', 'email', 'offline_access', 'citizen:read'],
 

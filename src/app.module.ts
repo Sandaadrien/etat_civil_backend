@@ -19,28 +19,36 @@ import { ActivationModule } from './activation/activation.module';
 import { OauthModule } from './oauth/oauth.module';
 import { CitizenAuthController } from './citizen-auth/citizen-auth.controller';
 import { CitizenAuthModule } from './citizen-auth/citizen-auth.module';
+import { PersonneService } from './personne/personne.service';
+import { PersonneModule } from './personne/personne.module';
 
 @Module({
   imports: [
-  AuthModule.forRoot({
-    auth,
-  }),
-  ConfigModule.forRoot({
-    isGlobal: true,
-  }),
-  AgentsModule,
-  GeographyModule,
-  EnrolmentModule,
-  ReferenceModule,
-  DocumentTypeModule,
-  UploadsModule,
-  DashboardModule,
-  ActivationModule,
-  OauthModule,
-  CitizenAuthModule,
-  OcrModule,
-],
+    AuthModule.forRoot({
+      auth,
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    AgentsModule,
+    GeographyModule,
+    EnrolmentModule,
+    ReferenceModule,
+    DocumentTypeModule,
+    UploadsModule,
+    DashboardModule,
+    ActivationModule,
+    OauthModule,
+    CitizenAuthModule,
+    PersonneModule,
+    OcrModule,
+  ],
   controllers: [AppController, DashboardController, CitizenAuthController],
-  providers: [AppService, DocumentTypeService, DashboardService],
+  providers: [
+    AppService,
+    DocumentTypeService,
+    DashboardService,
+    PersonneService,
+  ],
 })
 export class AppModule {}
