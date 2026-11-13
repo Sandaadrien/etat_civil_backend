@@ -1,4 +1,5 @@
 import io
+import os
 from pathlib import Path
 from mock_data import MOCK_ACTE
 import fitz
@@ -107,7 +108,7 @@ def extract(file: UploadFile = File(...)):
     # =====================================
     # MODE MOCK (DEVELOPPEMENT)
     # =====================================
-    MOCK_MODE=True
+    MOCK_MODE = os.getenv("OCR_MOCK_MODE", "false").lower() == "true"
     if MOCK_MODE:
             return MOCK_ACTE.model_dump(mode="json")
 

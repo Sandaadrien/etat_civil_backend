@@ -23,11 +23,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Docker image
+      # 1. Construire le backend NestJS
+      - name: Build Backend Docker image
         run: |
           docker build \
             --platform linux/amd64 \
             -t etat-civil-backend:${GITHUB_SHA} .
+
+      # 2. Construire le service Python OCR
+      - name: Build OCR Docker image
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -t etat-civil-ocr:${GITHUB_SHA} \
+            ./actes-naissance
 
       - name: Configure SSH
         env:
@@ -79,11 +88,19 @@ jobs:
           scp scripts/deploy-prod.sh \
             school:/home/cloud/apps/etat-civil/
 
-      - name: Transfer Docker image
+      # 3. Envoyer l'image backend
+      - name: Transfer Backend Docker image
         run: |
           docker save etat-civil-backend:${GITHUB_SHA} \
             | ssh school "docker load"
 
+      # 4. Envoyer l'image OCR
+      - name: Transfer OCR Docker image
+        run: |
+          docker save etat-civil-ocr:${GITHUB_SHA} \
+            | ssh school "docker load"
+
+      # 5. Déployer les services
       - name: Run deployment
         run: |
           ssh school \
@@ -91,5 +108,5 @@ jobs:
 
       - name: Deployment completed
         run: |
-          echo "Etat Civil deployed successfully"
+          echo "Etat Civil Backend + OCR deployed successfully"
           echo "Commit: ${GITHUB_SHA}"

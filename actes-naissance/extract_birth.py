@@ -8,7 +8,9 @@ from ollama import chat
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 
-MODEL = "qwen2.5:7b"
+import os
+
+MODEL = os.getenv("OCR_MODEL", "qwen2.5:7b")
 
 
 class ActeNaissance(BaseModel):
@@ -79,7 +81,7 @@ DOCUMENT :
     )
 
     contenu = reponse.message.content.strip()
-    print("Réponse brute du modèle :", contenu)
+    #print("Réponse brute du modèle :", contenu)
 
     try:
         return ActeNaissance.model_validate_json(contenu)

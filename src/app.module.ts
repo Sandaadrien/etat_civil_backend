@@ -1,3 +1,4 @@
+import { OcrModule } from './ocr/ocr.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -40,6 +41,7 @@ import { PersonneModule } from './personne/personne.module';
     OauthModule,
     CitizenAuthModule,
     PersonneModule,
+    OcrModule,
   ],
   controllers: [AppController, DashboardController, CitizenAuthController],
   providers: [
