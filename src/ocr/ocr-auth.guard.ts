@@ -10,7 +10,7 @@ import type { Request } from 'express';
 
 import { auth } from '../lib/auth';
 import { prisma } from '../lib/prisma';
-
+// mi-fetch en comments
 @Injectable()
 export class OcrAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
