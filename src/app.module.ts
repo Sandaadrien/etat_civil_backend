@@ -1,3 +1,4 @@
+import { OcrModule } from './ocr/ocr.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -21,23 +22,24 @@ import { CitizenAuthModule } from './citizen-auth/citizen-auth.module';
 
 @Module({
   imports: [
-    AuthModule.forRoot({
-      auth,
-    }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    AgentsModule,
-    GeographyModule,
-    EnrolmentModule,
-    ReferenceModule,
-    DocumentTypeModule,
-    UploadsModule,
-    DashboardModule,
-    ActivationModule,
-    OauthModule,
-    CitizenAuthModule,
-  ],
+  AuthModule.forRoot({
+    auth,
+  }),
+  ConfigModule.forRoot({
+    isGlobal: true,
+  }),
+  AgentsModule,
+  GeographyModule,
+  EnrolmentModule,
+  ReferenceModule,
+  DocumentTypeModule,
+  UploadsModule,
+  DashboardModule,
+  ActivationModule,
+  OauthModule,
+  CitizenAuthModule,
+  OcrModule,
+],
   controllers: [AppController, DashboardController, CitizenAuthController],
   providers: [AppService, DocumentTypeService, DashboardService],
 })
