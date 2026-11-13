@@ -1,4 +1,5 @@
 import io
+import os
 from pathlib import Path
 from mock_data import MOCK_ACTE
 import fitz
