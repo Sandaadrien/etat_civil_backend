@@ -21,6 +21,8 @@ import { CitizenAuthController } from './citizen-auth/citizen-auth.controller';
 import { CitizenAuthModule } from './citizen-auth/citizen-auth.module';
 import { PersonneService } from './personne/personne.service';
 import { PersonneModule } from './personne/personne.module';
+import { CitizenController } from './citizen/citizen.controller';
+import { CitizenModule } from './citizen/citizen.module';
 
 @Module({
   imports: [
@@ -42,8 +44,9 @@ import { PersonneModule } from './personne/personne.module';
     CitizenAuthModule,
     PersonneModule,
     OcrModule,
+    CitizenModule,
   ],
-  controllers: [AppController, DashboardController, CitizenAuthController],
+  controllers: [AppController, DashboardController, CitizenAuthController, CitizenController],
   providers: [
     AppService,
     DocumentTypeService,
