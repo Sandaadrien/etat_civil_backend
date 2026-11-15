@@ -108,9 +108,9 @@ def extract(file: UploadFile = File(...)):
     # =====================================
     # MODE MOCK (DEVELOPPEMENT)
     # =====================================
-    MOCK_MODE = os.getenv("OCR_MOCK_MODE", "false").lower() == "true"
-    if MOCK_MODE:
-            return MOCK_ACTE.model_dump(mode="json")
+    # MOCK_MODE = os.getenv("OCR_MOCK_MODE", "false").lower() == "true"
+    # if MOCK_MODE:
+    #         return MOCK_ACTE.model_dump(mode="json")
 
     if extension not in ALLOWED_EXTENSIONS:
         raise HTTPException(
