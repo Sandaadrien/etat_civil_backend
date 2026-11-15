@@ -226,4 +226,119 @@ export class CitizenService {
       },
     };
   }
+
+  /**
+   * Récupérer les statistiques du citoyen connecté
+   * GET /citizen/stats
+   */
+  async getStats(userId: string) {
+    // 1. Vérifier l'existence du citoyen
+    const citizen = await prisma.citizen.findUnique({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!citizen) {
+      throw new NotFoundException('Profil citoyen introuvable.');
+    }
+
+    // 2. Récupérer les statistiques et les documents récents en parallèle
+    const [totalDocuments, availableTypes, pendingSync, recentDocuments] =
+      await Promise.all([
+        // Nombre total de documents
+        prisma.document.count({
+          where: {
+            enrolment: {
+              citizen_id: citizen.id,
+            },
+          },
+        }),
+
+        // Nombre de types de documents différents
+        prisma.document.groupBy({
+          by: ['document_type_id'],
+          where: {
+            enrolment: {
+              citizen_id: citizen.id,
+            },
+          },
+        }),
+
+        // Nombre d'enrôlements en attente de synchronisation
+        prisma.enrolment.count({
+          where: {
+            citizen_id: citizen.id,
+            sync_status: 'PENDING',
+          },
+        }),
+
+        // Les 5 derniers documents
+        prisma.document.findMany({
+          where: {
+            enrolment: {
+              citizen_id: citizen.id,
+            },
+          },
+          include: {
+            document_type: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+              },
+            },
+            enrolment: {
+              select: {
+                id: true,
+                enrolment_type: true,
+                sync_status: true,
+                created_at: true,
+              },
+            },
+          },
+          orderBy: {
+            created_at: 'desc',
+          },
+          take: 5,
+        }),
+      ]);
+
+    // 3. Formater les documents récents
+    const formattedRecentDocuments = recentDocuments.map((document) => ({
+      id: document.id,
+
+      type: {
+        id: document.document_type.id,
+        name: document.document_type.name,
+        description: document.document_type.description,
+      },
+
+      enrolment: {
+        id: document.enrolment.id,
+        type: document.enrolment.enrolment_type,
+        sync_status: document.enrolment.sync_status,
+        created_at: document.enrolment.created_at,
+      },
+
+      created_at: document.created_at,
+    }));
+
+    // 4. Retourner les statistiques
+    return {
+      message: 'Statistiques du citoyen récupérées avec succès.',
+      data: {
+        documents: {
+          documents: totalDocuments,
+          available_types: availableTypes.length,
+          pending_sync: pendingSync,
+        },
+
+        recent_documents: formattedRecentDocuments,
+      },
+    };
+  }
 }

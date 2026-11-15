@@ -35,4 +35,11 @@ export class CitizenController {
   ) {
     return this.citizenService.getDocumentDetails(session.user.id, documentId);
   }
+  /**
+   * GET /citizen/stats
+   */
+  @Get('stats')
+  async getStats(@Session() session: UserSession) {
+    return this.citizenService.getStats(session.user.id);
+  }
 }
