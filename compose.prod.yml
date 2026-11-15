@@ -30,6 +30,8 @@ services:
       OCR_MOCK_MODE: "false"
     expose:
       - "8000"
+    ports:
+      - "100.101.128.43:8000:8000"
     networks:
       - internal
       - ollama_network
