@@ -60,8 +60,8 @@ export const auth = betterAuth({
 
     // Notre serveur OAuth / OpenID Connect
     oauthProvider({
-      loginPage: '/sign-in',
-      consentPage: '/consent',
+      loginPage: 'https://etatcivil.esera.works/sign-in',
+      consentPage: 'https://etatcivil.esera.works/consent',
       scopes: ['openid', 'profile', 'email', 'offline_access', 'citizen:read'],
 
       accessTokenExpiresIn: 900,
