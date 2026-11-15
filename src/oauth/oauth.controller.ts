@@ -7,8 +7,10 @@ import {
 } from '@nestjs/common';
 
 import { OauthService } from './oauth.service';
+import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 
 @Controller('oauth')
+@AllowAnonymous()
 export class OauthController {
   constructor(private readonly oauthService: OauthService) {}
 
