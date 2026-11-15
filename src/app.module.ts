@@ -46,7 +46,12 @@ import { CitizenModule } from './citizen/citizen.module';
     OcrModule,
     CitizenModule,
   ],
-  controllers: [AppController, DashboardController, CitizenAuthController, CitizenController],
+  controllers: [
+    AppController,
+    DashboardController,
+    CitizenAuthController,
+    CitizenController,
+  ],
   providers: [
     AppService,
     DocumentTypeService,
