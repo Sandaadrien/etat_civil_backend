@@ -4,23 +4,37 @@ import { auth } from '../lib/auth';
 
 @Injectable()
 export class OauthService {
+  async getSession(headers: Headers) {
+    return auth.api.getSession({ headers });
+  }
+
   async createClient(
     headers: Headers,
     data: {
       client_name: string;
       redirect_uris: string[];
       post_logout_redirect_uris?: string[];
-      scopes: string[];
     },
   ) {
     try {
-      const client = await auth.api.adminCreateOAuthClient({
+      const client: unknown = await auth.api.adminCreateOAuthClient({
         headers,
         body: {
           client_name: data.client_name,
+
           redirect_uris: data.redirect_uris,
           post_logout_redirect_uris: data.post_logout_redirect_uris ?? [],
-          scope: data.scopes.join(' '),
+
+          scope: 'openid profile email',
+          token_endpoint_auth_method: 'client_secret_basic',
+
+          grant_types: ['authorization_code'],
+
+          response_types: ['code'],
+
+          require_pkce: true,
+
+          application_type: 'web',
         },
       });
 
