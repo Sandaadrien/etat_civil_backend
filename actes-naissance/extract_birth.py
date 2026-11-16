@@ -16,15 +16,22 @@ MODEL = os.getenv("OCR_MODEL", "qwen2.5:7b")
 class ActeNaissance(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    nom: str | None = None
-    prenoms: str | None = None
-    genre: Literal["M", "F"] | None = None
-    date_naissance: date | None = None
-    date_naissance_originale: str | None = None
-    lieu_naissance: str | None = None
-    nom_mere: str | None = None
-    nom_pere: str | None = None
-
+    # nom: str | None = None
+    # prenoms: str | None = None
+    # genre: Literal["M", "F"] | None = None
+    # date_naissance: date | None = None
+    # date_naissance_originale: str | None = None
+    # lieu_naissance: str | None = None
+    # nom_mere: str | None = None
+    # nom_pere: str | None = None
+    nom: str = ""
+    prenoms: str = ""
+    genre: Literal["M", "F"] | str = ""
+    date_naissance: str = ""
+    date_naissance_originale: str = ""
+    lieu_naissance: str = ""
+    nom_mere: str = ""
+    nom_pere: str = ""
 
 def extraire_acte(texte: str) -> ActeNaissance:
     if not texte.strip():
