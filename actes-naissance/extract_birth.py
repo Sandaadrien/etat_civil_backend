@@ -1,14 +1,13 @@
 import argparse
 import json
-from pathlib import Path
+import os
+import re
 from datetime import date
+from pathlib import Path
 from typing import Literal
 
 from ollama import chat
-from pydantic import BaseModel, ConfigDict, ValidationError
-
-
-import os
+from pydantic import BaseModel, ConfigDict, ValidationError, field_validator
 
 MODEL = os.getenv("OCR_MODEL", "qwen2.5:7b")
 
@@ -16,28 +15,30 @@ MODEL = os.getenv("OCR_MODEL", "qwen2.5:7b")
 class ActeNaissance(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    # nom: str | None = None
-    # prenoms: str | None = None
-    # genre: Literal["M", "F"] | None = None
-    # date_naissance: date | None = None
-    # date_naissance_originale: str | None = None
-    # lieu_naissance: str | None = None
-    # nom_mere: str | None = None
-    # nom_pere: str | None = None
     nom: str = ""
     prenoms: str = ""
-    genre: Literal["M", "F"] | str = ""
+    genre: Literal["M", "F", ""] = ""
     date_naissance: str = ""
     date_naissance_originale: str = ""
     lieu_naissance: str = ""
     nom_mere: str = ""
     nom_pere: str = ""
 
-def extraire_acte(texte: str) -> ActeNaissance:
-    if not texte.strip():
-        raise ValueError("Le texte fourni est vide.")
+    @field_validator("date_naissance")
+    @classmethod
+    def verifier_date(cls, v: str) -> str:
+        if not v:
+            return ""
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", v):
+            return ""
+        try:
+            date.fromisoformat(v)  # rejette par ex. 2020-02-31
+        except ValueError:
+            return ""
+        return v
 
-    prompt = """
+
+PROMPT = """
 Extrais les informations de cet acte de naissance malgache.
 
 Le texte peut être en français ou en malgache et provenir
@@ -50,35 +51,36 @@ Règles :
 - Conserve la date écrite en toutes lettres dans le champ original.
 - Genre : M ou F seulement si le document le permet.
 - N'invente aucune information.
-- Utilise null pour les informations absentes ou incertaines.
+- Utilise une chaîne vide "" pour les informations absentes ou incertaines.
+- N'utilise jamais null.
 - Les noms des parents doivent être explicitement identifiés.
 
 Retourne uniquement un objet JSON valide avec exactement ces clés :
 {
-  "nom": null,
-  "prenoms": null,
-  "genre": null,
-  "date_naissance": null,
-  "date_naissance_originale": null,
-  "lieu_naissance": null,
-  "nom_mere": null,
-  "nom_pere": null
+  "nom": "",
+  "prenoms": "",
+  "genre": "",
+  "date_naissance": "",
+  "date_naissance_originale": "",
+  "lieu_naissance": "",
+  "nom_mere": "",
+  "nom_pere": ""
 }
 
-Les dates doivent être des chaînes YYYY-MM-DD ou null.
-Le genre doit être M, F ou null.
+La date_naissance doit être une chaîne YYYY-MM-DD ou "".
+Le genre doit être "M", "F" ou "".
 
 DOCUMENT :
-""" + texte
+"""
+
+
+def extraire_acte(texte: str) -> ActeNaissance:
+    if not texte.strip():
+        raise ValueError("Le texte fourni est vide.")
 
     reponse = chat(
         model=MODEL,
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
+        messages=[{"role": "user", "content": PROMPT + texte}],
         format="json",
         options={
             "temperature": 0,
@@ -88,11 +90,19 @@ DOCUMENT :
     )
 
     contenu = reponse.message.content.strip()
-    #print("Réponse brute du modèle :", contenu)
 
     try:
-        return ActeNaissance.model_validate_json(contenu)
-    except ValidationError as exc:
+        brut = json.loads(contenu)
+        if not isinstance(brut, dict):
+            raise ValueError("La réponse du modèle n'est pas un objet JSON.")
+
+        # Le LLM peut quand même renvoyer null : on le convertit en ""
+        nettoye = {
+            cle: ("" if valeur is None else valeur)
+            for cle, valeur in brut.items()
+        }
+        return ActeNaissance.model_validate(nettoye)
+    except (json.JSONDecodeError, ValidationError) as exc:
         raise ValueError(
             "Le modèle a répondu, mais les données "
             "ne respectent pas le format attendu."
@@ -107,9 +117,7 @@ def main():
     parser.add_argument("-o", "--output", help="Fichier JSON de sortie")
     args = parser.parse_args()
 
-    chemin = Path(args.texte)
-    texte = chemin.read_text(encoding="utf-8")
-
+    texte = Path(args.texte).read_text(encoding="utf-8")
     resultat = extraire_acte(texte)
 
     json_final = json.dumps(
@@ -121,10 +129,7 @@ def main():
     if args.output:
         destination = Path(args.output)
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(
-            json_final + "\n",
-            encoding="utf-8",
-        )
+        destination.write_text(json_final + "\n", encoding="utf-8")
         print(f"\nJSON enregistré dans : {destination}")
     else:
         print(json_final)
