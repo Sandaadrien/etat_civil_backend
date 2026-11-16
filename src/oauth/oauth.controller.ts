@@ -21,9 +21,11 @@ export class OauthController {
     body: {
       client_name: string;
       redirect_uris: string[];
+      post_logout_redirect_uris?: string[];
+      application_type?: string;
+      token_endpoint_auth_method?: string;
     },
   ) {
-    // Vérifier que la requête possède une session Citizen.
     const requestHeaders = new globalThis.Headers();
 
     for (const [name, value] of Object.entries(headers)) {
